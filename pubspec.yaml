@@ -1,5 +1,5 @@
 name: masterhanyu_app
-description: "A new Flutter project."
+description: "My FYP bruh."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -38,6 +38,7 @@ dependencies:
   shared_preferences: ^2.2.2
   cupertino_icons: ^1.0.8
   supabase_flutter: ^2.10.3
+  video_player: ^2.8.6
 
 # dev_dependencies specify packages needed for development and testing.
 # These dependencies are not included in the final build of your application.
@@ -59,8 +60,7 @@ dev_dependencies:
 flutter:
   assets:
     - assets/logo1.png
-    - assets/register_cat.png
-   
+    - assets/cat_typing.mp4
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
