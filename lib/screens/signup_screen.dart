@@ -182,7 +182,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
                               const SizedBox(height: 20),
 
-                              /// 👇 This will NEVER disappear now
                               Center(
                                 child: GestureDetector(
                                   onTap: () {
