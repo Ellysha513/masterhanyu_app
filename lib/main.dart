@@ -5,14 +5,13 @@ import 'screens/intro_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/lessons_screen.dart';
-import 'screens/speaking_screen.dart';
-import 'screens/quiz_screen.dart';
+import 'screens/practice_screen.dart';
 import 'screens/progress_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(
-    url: 'https:rfvavvmdthkmixkwfosa.supabase.co',
+    url: 'https://rfvavvmdthkmixkwfosa.supabase.co',
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmdmF2dm1kdGhrbWl4a3dmb3NhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyMDUyNTUsImV4cCI6MjA4MDc4MTI1NX0.3jTiFio_b9BcwbpNG4kySW85z8KJIwR1iSJjAw1EoZ8',
   );
@@ -65,8 +64,7 @@ class _RootTabsState extends State<RootTabs> {
   final List<Widget> _tabs = const [
     HomeScreen(),
     LessonsScreen(),
-    SpeakingScreen(),
-    QuizScreen(),
+    PracticeScreen(),
     ProgressScreen(),
   ];
 
@@ -86,11 +84,10 @@ class _RootTabsState extends State<RootTabs> {
             icon: Icon(Icons.library_books),
             label: 'Learn',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.mic), label: 'Practice'),
-          BottomNavigationBarItem(icon: Icon(Icons.quiz), label: 'Quiz'),
+          BottomNavigationBarItem(icon: Icon(Icons.quiz), label: 'Practice'),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
-            label: 'Profile',
+            label: 'Me',
           ),
         ],
       ),
