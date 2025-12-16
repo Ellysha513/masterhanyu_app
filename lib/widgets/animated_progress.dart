@@ -1,83 +1,35 @@
 import 'package:flutter/material.dart';
 
-class AnimatedProgressBar extends StatefulWidget {
-  final double value; // 0..1
+class AnimatedProgressBar extends StatelessWidget {
+  final double value; // 0.0 → 1.0
   final double height;
   final Color activeColor;
+  final Color backgroundColor;
+  final Duration duration;
+
   const AnimatedProgressBar({
     super.key,
     required this.value,
     this.height = 8,
     this.activeColor = Colors.blue,
+    this.backgroundColor = const Color(0xFFE5E7EB),
+    this.duration = const Duration(milliseconds: 600),
   });
 
   @override
-  State<AnimatedProgressBar> createState() => _AnimatedProgressBarState();
-}
-
-class _AnimatedProgressBarState extends State<AnimatedProgressBar>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late Animation<double> _anim;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 700),
-    );
-    _anim = Tween<double>(
-      begin: 0,
-      end: widget.value,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
-    _controller.forward();
-  }
-
-  @override
-  void didUpdateWidget(covariant AnimatedProgressBar oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.value != widget.value) {
-      _anim = Tween<double>(
-        begin: oldWidget.value,
-        end: widget.value,
-      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
-      _controller
-        ..reset()
-        ..forward();
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: widget.height,
-      child: AnimatedBuilder(
-        animation: _anim,
-        builder: (context, child) {
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Stack(
-              children: [
-                Container(
-                  color: Colors.grey.withValues(alpha: 0.3),
-                  height: widget.height,
-                ),
-                FractionallySizedBox(
-                  widthFactor: _anim.value,
-                  child: Container(
-                    color: widget.activeColor,
-                    height: widget.height,
-                  ),
-                ),
-              ],
-            ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(height / 2),
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0, end: value.clamp(0.0, 1.0)),
+        duration: duration,
+        curve: Curves.easeOutCubic,
+        builder: (context, v, _) {
+          return LinearProgressIndicator(
+            value: v,
+            minHeight: height,
+            backgroundColor: backgroundColor,
+            valueColor: AlwaysStoppedAnimation(activeColor),
           );
         },
       ),

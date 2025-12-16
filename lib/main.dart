@@ -75,7 +75,7 @@ class _RootTabsState extends State<RootTabs> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
-        selectedItemColor: Colors.deepOrange,
+        selectedItemColor: const Color.fromARGB(255, 56, 54, 180),
         unselectedItemColor: Colors.grey[600],
         onTap: (i) => setState(() => _currentIndex = i),
         items: const [
