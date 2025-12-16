@@ -57,7 +57,7 @@ class _IntroScreenState extends State<IntroScreen>
         child: ScaleTransition(
           scale: _scaleAnimation,
           child: Image.asset(
-            "assets/logo1.png",
+            "assets/image/logo1.png",
             width: 230,
             height: 230,
           ),

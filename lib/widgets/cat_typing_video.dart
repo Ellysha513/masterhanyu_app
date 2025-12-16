@@ -15,7 +15,7 @@ class _CatTypingVideoState extends State<CatTypingVideo> {
   void initState() {
     super.initState();
 
-    _controller = VideoPlayerController.asset('assets/cat_typing.mp4')
+    _controller = VideoPlayerController.asset('assets/video/cat_typing.mp4')
       ..initialize().then((_) {
         _controller
           ..setLooping(true)
