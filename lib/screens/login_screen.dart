@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:masterhanyu_app/main.dart';
 import 'signup_screen.dart';
 import '../widgets/cat_typing_video.dart';
 import '../widgets/animated_background.dart';
 import '../services/supabase_auth_service.dart';
+import '../main.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -38,28 +38,36 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> login() async {
     setState(() => loading = true);
-    final auth = SupabaseAuthService();
 
     try {
+      final auth = SupabaseAuthService();
+
       final response = await auth.signInWithUsername(
         username: usernameController.text.trim(),
         password: passwordController.text.trim(),
       );
 
+      debugPrint('SESSION = ${response.session}');
+
       if (!mounted) return;
+
       setState(() => loading = false);
 
-      if (response.session != null) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const RootTabs()),
-        );
+      if (response.session == null) {
+        throw Exception('Login failed');
       }
+
+      // ✅ MANUAL NAVIGATION (NO MORE WAITING)
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const RootApp()),
+        (route) => false,
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() => loading = false);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
@@ -72,8 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
             builder: (context, constraints) {
               return SingleChildScrollView(
                 child: ConstrainedBox(
-                  constraints:
-                      BoxConstraints(minHeight: constraints.maxHeight),
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -90,8 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             boxShadow: [
                               BoxShadow(
                                 blurRadius: 16,
-                                color:
-                                    Colors.black.withValues(alpha: 0.12),
+                                color: Colors.black.withValues(alpha: 0.12),
                                 offset: const Offset(0, 6),
                               ),
                             ],
@@ -117,8 +123,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
                               TextField(
                                 controller: usernameController,
-                                decoration: _input("Username",
-                                    Icons.person_outline),
+                                decoration: _input(
+                                  "Username",
+                                  Icons.person_outline,
+                                ),
                               ),
 
                               const SizedBox(height: 18),
@@ -130,12 +138,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                   "Password",
                                   Icons.lock_outline,
                                   suffix: IconButton(
-                                    icon: Icon(_obscurePassword
-                                        ? Icons.visibility_off
-                                        : Icons.visibility),
-                                    onPressed: () => setState(() =>
-                                        _obscurePassword =
-                                            !_obscurePassword),
+                                    icon: Icon(
+                                      _obscurePassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                    ),
+                                    onPressed:
+                                        () => setState(
+                                          () =>
+                                              _obscurePassword =
+                                                  !_obscurePassword,
+                                        ),
                                   ),
                                 ),
                               ),
@@ -146,30 +159,29 @@ class _LoginScreenState extends State<LoginScreen> {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   onPressed:
-                                      (!isFormValid || loading)
-                                          ? null
-                                          : login,
+                                      (!isFormValid || loading) ? null : login,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        const Color(0xFF0A4D68),
+                                    backgroundColor: const Color(0xFF0A4D68),
                                     disabledBackgroundColor:
                                         Colors.grey.shade400,
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 15),
+                                      vertical: 15,
+                                    ),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
                                   ),
-                                  child: loading
-                                      ? const CircularProgressIndicator(
-                                          color: Colors.white,
-                                        )
-                                      : const Text(
-                                          "Sign In",
-                                          style: TextStyle(
-                                              color: Colors.white),
-                                        ),
+                                  child:
+                                      loading
+                                          ? const CircularProgressIndicator(
+                                            color: Colors.white,
+                                          )
+                                          : const Text(
+                                            "Sign In",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                 ),
                               ),
 
@@ -181,8 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) =>
-                                            const SignupScreen(),
+                                        builder: (_) => const SignupScreen(),
                                       ),
                                     );
                                   },
@@ -210,8 +221,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  InputDecoration _input(String hint, IconData icon,
-      {Widget? suffix}) {
+  InputDecoration _input(String hint, IconData icon, {Widget? suffix}) {
     return InputDecoration(
       prefixIcon: Icon(icon),
       hintText: hint,

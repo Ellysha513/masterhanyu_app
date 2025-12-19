@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import '../models/user_profile.dart';
 import '../widgets/animated_progress.dart';
-import 'lessons_screen.dart';
-import 'practice_screen.dart';
-import 'progress_screen.dart';
+import 'learn_screen.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final UserProfile user;
+  final Function(int) onQuickAccessTap;
+
+  const HomeScreen({
+    super.key,
+    required this.user,
+    required this.onQuickAccessTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,22 +22,21 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             children: [
               _header(),
+              const SizedBox(height: 14),
 
-              const SizedBox(height: 16),
               _welcomeCard(),
-
               const SizedBox(height: 20),
+
               _activeCourse(),
-
               const SizedBox(height: 24),
+
               _quickAccess(context),
-
               const SizedBox(height: 24),
+
               _dailyGoal(context),
-
               const SizedBox(height: 24),
-              _learningTip(),
 
+              _learningTip(),
               const SizedBox(height: 40),
             ],
           ),
@@ -46,7 +51,7 @@ class HomeScreen extends StatelessWidget {
   Widget _header() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 32, 20, 36),
+      padding: const EdgeInsets.fromLTRB(18, 28, 18, 28),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFF7B7CFF), Color(0xFFB59CFF)],
@@ -54,8 +59,8 @@ class HomeScreen extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(28),
-          bottomRight: Radius.circular(28),
+          bottomLeft: Radius.circular(25),
+          bottomRight: Radius.circular(25),
         ),
       ),
       child: const Column(
@@ -64,7 +69,7 @@ class HomeScreen extends StatelessWidget {
             "MasterHanyu",
             style: TextStyle(
               color: Colors.white,
-              fontSize: 22,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -86,10 +91,11 @@ class HomeScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Welcome back, Student!",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          Text(
+            "Hello, ${user.name.isNotEmpty ? user.name : user.username}!",
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
+
           const SizedBox(height: 4),
           const Text(
             "Ready to continue your Chinese learning journey?",
@@ -107,13 +113,8 @@ class HomeScreen extends StatelessWidget {
               children: [
                 _InfoRow("Your Level", "Beginner", Colors.blue),
                 SizedBox(height: 6),
-                _InfoRow("Words Learned", "48 words", Colors.orange),
+                _InfoRow("Learning Progress", "32%", Colors.orange),
                 SizedBox(height: 10),
-                Text(
-                  "32% to next level",
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-                SizedBox(height: 6),
                 AnimatedProgressBar(
                   value: 0.32,
                   height: 8,
@@ -132,7 +133,7 @@ class HomeScreen extends StatelessWidget {
   // ------------------------------------------------------------
   Widget _activeCourse() {
     return _card(
-      title: "Active Courses",
+      title: "Active Lessons",
       child: Row(
         children: [
           Container(
@@ -149,7 +150,7 @@ class HomeScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Basic Greetings",
+                  "Introduction to Chinese",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 ),
                 SizedBox(height: 4),
@@ -189,7 +190,6 @@ class HomeScreen extends StatelessWidget {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 14),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -198,32 +198,25 @@ class HomeScreen extends StatelessWidget {
                 label: "Browse Lessons",
                 color: Colors.pink,
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LessonsScreen()),
-                  );
+                  onQuickAccessTap(1); // Learn tab
                 },
               ),
+
               _QuickTile(
                 icon: Icons.emoji_events,
                 label: "Take a Quiz",
                 color: Colors.purple,
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const PracticeScreen()),
-                  );
+                  onQuickAccessTap(2); // Practice tab
                 },
               ),
+
               _QuickTile(
                 icon: Icons.trending_up,
                 label: "View Progress",
                 color: Colors.green,
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const ProgressScreen()),
-                  );
+                  onQuickAccessTap(3); // Me tab
                 },
               ),
             ],
@@ -263,7 +256,7 @@ class HomeScreen extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const LessonsScreen()),
+                MaterialPageRoute(builder: (_) => const LearnScreen()),
               );
             },
           ),

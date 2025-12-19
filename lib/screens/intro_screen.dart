@@ -21,7 +21,7 @@ class _IntroScreenState extends State<IntroScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1800),
+      duration: const Duration(milliseconds: 3500),
     );
 
     _scaleAnimation = Tween<double>(begin: 0.4, end: 1.0).animate(
@@ -34,7 +34,7 @@ class _IntroScreenState extends State<IntroScreen>
     _controller.forward();
 
     // Go to login screen after animation
-    Timer(const Duration(milliseconds: 2000), () {
+    Timer(const Duration(milliseconds: 2500), () {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,

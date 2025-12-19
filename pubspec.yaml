@@ -39,6 +39,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   supabase_flutter: ^2.10.3
   video_player: ^2.8.6
+  image_picker: ^1.0.7
+  cached_network_image: ^3.3.1
 
 # dev_dependencies specify packages needed for development and testing.
 # These dependencies are not included in the final build of your application.

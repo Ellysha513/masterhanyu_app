@@ -1,0 +1,351 @@
+import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
+import '../models/user_profile.dart';
+import '../theme/app_background.dart';
+import '../widgets/stat_graph_sheet.dart';
+import 'profile_info_screen.dart';
+
+class MeScreen extends StatefulWidget {
+  final UserProfile user;
+
+  const MeScreen({super.key, required this.user});
+
+  @override
+  State<MeScreen> createState() => _MeScreenState();
+}
+
+class _MeScreenState extends State<MeScreen> {
+  UserProfile get user => widget.user;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: masterHanyuBackground(),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.only(bottom: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _header(),
+                const SizedBox(height: 16),
+                _profileCard(context),
+                const SizedBox(height: 24),
+                _statistics(context),
+                const SizedBox(height: 24),
+                _badges(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ------------------------------------------------------------
+  // HEADER
+  // ------------------------------------------------------------
+  Widget _header() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 26, 16, 26),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF7B7CFF), Color(0xFFB59CFF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(26),
+          bottomRight: Radius.circular(26),
+        ),
+      ),
+      child: const Center(
+        child: Text(
+          "Profile",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ------------------------------------------------------------
+  // PROFILE CARD
+  // ------------------------------------------------------------
+  Widget _profileCard(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: GestureDetector(
+        onTap: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => ProfileInfoScreen(user: user)),
+          );
+          setState(() {}); // 🔥 force rebuild
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.92),
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              _avatar(),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user.username,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      user.email,
+                      style: const TextStyle(fontSize: 13, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _avatar() {
+    return CircleAvatar(
+      radius: 26,
+      backgroundColor: Colors.deepPurple,
+      child: CircleAvatar(
+        radius: 24,
+        backgroundColor: Colors.white,
+        backgroundImage:
+            user.imagePath != null
+                ? CachedNetworkImageProvider(user.imagePath!)
+                : null,
+        child:
+            user.imagePath == null
+                ? Text(
+                  user.username[0].toUpperCase(),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepPurple,
+                  ),
+                )
+                : null,
+      ),
+    );
+  }
+
+  // ------------------------------------------------------------
+  // STATISTICS
+  // ------------------------------------------------------------
+  Widget _statistics(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Statistics",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 12),
+
+          Row(
+            children: [
+              const Expanded(
+                child: StatCard(title: "126 XP", subtitle: "Total XP"),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: StatCard(
+                  title: "0 XP",
+                  subtitle: "Today's XP",
+                  isClickable: true,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          Row(
+            children: [
+              const Expanded(
+                child: StatCard(title: "45 min", subtitle: "Total time"),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: StatCard(
+                  title: "0",
+                  subtitle: "Today's time",
+                  isClickable: true,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ------------------------------------------------------------
+  // BADGES
+  // ------------------------------------------------------------
+  Widget _badges() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Badges",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                "VIEW ALL",
+                style: TextStyle(
+                  color: Colors.deepPurple,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12),
+          Row(
+            children: [
+              BadgeItem(label: "XP Hunter"),
+              SizedBox(width: 12),
+              BadgeItem(label: "Native Speaker"),
+              SizedBox(width: 12),
+              BadgeItem(label: "Marathon Pro"),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class StatCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final bool isClickable;
+
+  const StatCard({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    this.isClickable = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap:
+          isClickable
+              ? () {
+                showModalBottomSheet(
+                  context: context,
+                  backgroundColor: Colors.transparent,
+                  isScrollControlled: true,
+                  builder:
+                      (_) => StatGraphSheet(
+                        title:
+                            subtitle == "Today's XP"
+                                ? "XP"
+                                : "Study time (min)",
+                        dateRange: "(12/12/2025 - 18/12/2025)",
+                        values: const [0, 0, 0, 0, 0, 0, 0],
+                      ),
+                );
+              }
+              : null,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.9),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: const TextStyle(color: Colors.grey, fontSize: 13),
+                ),
+              ],
+            ),
+            if (isClickable)
+              const Icon(Icons.chevron_right, color: Colors.grey),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class BadgeItem extends StatelessWidget {
+  final String label;
+
+  const BadgeItem({super.key, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          height: 64,
+          width: 64,
+          decoration: BoxDecoration(
+            color: Colors.grey.shade200,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: const Icon(Icons.emoji_events, color: Colors.amber),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+}

@@ -11,65 +11,71 @@ class SupabaseAuthService {
     required String username,
     required String password,
   }) async {
-    // Check if username exists
-    final existingUser = await _supabase
-        .from('profiles')
-        .select()
-        .eq('username', username)
-        .maybeSingle();
+    // 1️⃣ Check if username already exists
+    final existingUser =
+        await _supabase
+            .from('profiles')
+            .select('id')
+            .eq('username', username)
+            .maybeSingle();
 
     if (existingUser != null) {
       throw AuthException('Username already taken');
     }
 
-    // Create user in Supabase Auth
+    // 2️⃣ Create user in Supabase Auth
     final response = await _supabase.auth.signUp(
       email: email,
       password: password,
-      data: {
-        'username': username,
-      },
+      data: {'username': username},
     );
 
-    if (response.user == null) {
-      throw AuthException("Signup failed");
+    final user = response.user;
+    if (user == null) {
+      throw AuthException('Signup failed');
     }
 
-    // Insert into profiles table
+    // 3️⃣ Insert profile row
     await _supabase.from('profiles').insert({
-      'id': response.user!.id,
+      'id': user.id,
       'email': email,
       'username': username,
+      'created_at': DateTime.now().toIso8601String(),
     });
 
     return response;
   }
 
   // -------------------------
-  // LOGIN (using username, not email)
+  // LOGIN (username + password)
   // -------------------------
   Future<AuthResponse> signInWithUsername({
     required String username,
     required String password,
   }) async {
-    // First, find email from username
-    final userData = await _supabase
-        .from('profiles')
-        .select('email')
-        .eq('username', username)
-        .maybeSingle();
+    // 1️⃣ Resolve username → email
+    final userData =
+        await _supabase
+            .from('profiles')
+            .select('email')
+            .eq('username', username)
+            .maybeSingle();
 
-    if (userData == null) {
-      throw AuthException("Username not found");
+    if (userData == null || userData['email'] == null) {
+      throw AuthException('Username not found');
     }
 
-    final email = userData['email'];
+    final String email = userData['email'];
 
-    // Now sign in using the email
+    // 2️⃣ Login using email
     final response = await _supabase.auth.signInWithPassword(
       email: email,
       password: password,
     );
+
+    if (response.session == null) {
+      throw AuthException('Invalid password');
+    }
 
     return response;
   }
@@ -82,7 +88,7 @@ class SupabaseAuthService {
   }
 
   // -------------------------
-  // GET CURRENT USER
+  // CURRENT USER
   // -------------------------
   User? get currentUser => _supabase.auth.currentUser;
 }

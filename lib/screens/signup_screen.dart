@@ -21,8 +21,7 @@ class _SignupScreenState extends State<SignupScreen> {
   bool isFormValid = false;
 
   void validateForm() {
-    final emailRegex =
-        RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
     setState(() {
       isFormValid =
@@ -63,8 +62,9 @@ class _SignupScreenState extends State<SignupScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => loading = false);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
@@ -77,13 +77,10 @@ class _SignupScreenState extends State<SignupScreen> {
             builder: (context, constraints) {
               return SingleChildScrollView(
                 padding: EdgeInsets.only(
-                  bottom:
-                      MediaQuery.of(context).viewInsets.bottom + 20,
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 20,
                 ),
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight,
-                  ),
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -93,25 +90,20 @@ class _SignupScreenState extends State<SignupScreen> {
 
                         Container(
                           padding: const EdgeInsets.all(26),
-                          margin:
-                              const EdgeInsets.symmetric(horizontal: 20),
+                          margin: const EdgeInsets.symmetric(horizontal: 20),
                           decoration: BoxDecoration(
-                            color:
-                                Colors.white.withValues(alpha: 0.95),
-                            borderRadius:
-                                BorderRadius.circular(26),
+                            color: Colors.white.withValues(alpha: 0.95),
+                            borderRadius: BorderRadius.circular(26),
                             boxShadow: [
                               BoxShadow(
                                 blurRadius: 16,
-                                color: Colors.black
-                                    .withValues(alpha: 0.12),
+                                color: Colors.black.withValues(alpha: 0.12),
                                 offset: const Offset(0, 6),
                               ),
                             ],
                           ),
                           child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
                                 "Sign Up",
@@ -149,34 +141,30 @@ class _SignupScreenState extends State<SignupScreen> {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   onPressed:
-                                      (!isFormValid || loading)
-                                          ? null
-                                          : signup,
+                                      (!isFormValid || loading) ? null : signup,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        const Color(0xFF0A4D68),
+                                    backgroundColor: const Color(0xFF0A4D68),
                                     disabledBackgroundColor:
                                         Colors.grey.shade400,
-                                    padding:
-                                        const EdgeInsets.symmetric(
-                                            vertical: 15),
-                                    shape:
-                                        RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(12),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 15,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
                                   ),
-                                  child: loading
-                                      ? const CircularProgressIndicator(
-                                          color: Colors.white,
-                                        )
-                                      : const Text(
-                                          "Create Account",
-                                          style: TextStyle(
-                                            fontSize: 16,
+                                  child:
+                                      loading
+                                          ? const CircularProgressIndicator(
                                             color: Colors.white,
+                                          )
+                                          : const Text(
+                                            "Create Account",
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                            ),
                                           ),
-                                        ),
                                 ),
                               ),
 
@@ -188,8 +176,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) =>
-                                            const LoginScreen(),
+                                        builder: (_) => const LoginScreen(),
                                       ),
                                     );
                                   },
@@ -235,17 +222,17 @@ class _SignupScreenState extends State<SignupScreen> {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
-        suffixIcon: obscure
-            ? IconButton(
-                icon: Icon(
-                  _obscurePassword
-                      ? Icons.visibility_off
-                      : Icons.visibility,
-                ),
-                onPressed: () => setState(
-                    () => _obscurePassword = !_obscurePassword),
-              )
-            : null,
+        suffixIcon:
+            obscure
+                ? IconButton(
+                  icon: Icon(
+                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed:
+                      () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
+                )
+                : null,
       ),
     );
   }
