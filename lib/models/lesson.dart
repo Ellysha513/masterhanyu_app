@@ -1,26 +1,19 @@
 class Lesson {
-  final String id;
-  final String title;
-  final String level;
-  final int duration;
   final String category;
+  final String title;
   final String description;
-  final List<VocabWord> vocab;
+  final int words;
+  final String level;
+  final double progress;
+  final String imageUrl;
 
   Lesson({
-    required this.id,
-    required this.title,
-    required this.level,
-    required this.duration,
     required this.category,
+    required this.title,
     required this.description,
-    required this.vocab,
+    required this.words,
+    required this.level,
+    required this.progress,
+    required this.imageUrl,
   });
-}
-
-class VocabWord {
-  final String hanzi;
-  final String pinyin;
-  final String meaning;
-  VocabWord(this.hanzi, this.pinyin, this.meaning);
 }

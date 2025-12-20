@@ -51,17 +51,16 @@ class HomeScreen extends StatelessWidget {
   Widget _header() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(18, 28, 18, 28),
+      padding: const EdgeInsets.symmetric(vertical: 20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF7B7CFF), Color(0xFFB59CFF)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+          colors: [
+            Color.fromARGB(255, 160, 160, 248),
+            Color.fromARGB(255, 204, 134, 231),
+            Color.fromARGB(255, 248, 151, 240),
+          ],
         ),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(25),
-          bottomRight: Radius.circular(25),
-        ),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
       ),
       child: const Column(
         children: [
