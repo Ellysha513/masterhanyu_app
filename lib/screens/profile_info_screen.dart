@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'login_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -37,20 +36,6 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
     } else {
       gender = 'Female'; // safe default
     }
-  }
-
-  // ------------------------------------------------------------
-  // LOGOUT
-  // ------------------------------------------------------------
-  Future<void> _logout() async {
-    await Supabase.instance.client.auth.signOut();
-
-    if (!mounted) return;
-
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-      (route) => false,
-    );
   }
 
   // ------------------------------------------------------------
@@ -120,37 +105,7 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: Colors.black,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Logout',
-            onPressed: () async {
-              final shouldLogout = await showDialog<bool>(
-                context: context,
-                builder:
-                    (context) => AlertDialog(
-                      title: const Text('Logout'),
-                      content: const Text('Are you sure you want to logout?'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: const Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: const Text('Logout'),
-                        ),
-                      ],
-                    ),
-              );
-
-              if (shouldLogout == true) {
-                await _logout();
-              }
-            },
-          ),
-        ],
-      ), // ✅ ← THIS WAS MISSING
+      ), 
       // ------------------------------------------------------------
       // BODY
       // ------------------------------------------------------------

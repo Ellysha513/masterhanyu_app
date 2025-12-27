@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../models/user_profile.dart';
 import '../theme/app_background.dart';
 import '../widgets/stat_graph_sheet.dart';
-import 'profile_info_screen.dart';
+import 'account_settings_screen.dart';
 
 class MeScreen extends StatefulWidget {
   final UserProfile user;
@@ -103,7 +103,7 @@ class _MeScreenState extends State<MeScreen> {
         onTap: () async {
           await Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => ProfileInfoScreen(user: user)),
+            MaterialPageRoute(builder: (_) => AccountSettingsScreen(user: user)),
           );
           setState(() {}); // 🔥 force rebuild
         },

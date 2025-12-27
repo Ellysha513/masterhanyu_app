@@ -62,22 +62,39 @@ class HomeScreen extends StatelessWidget {
         ),
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
       ),
-      child: const Column(
-        children: [
-          Text(
-            "MasterHanyu",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+      child: Center(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // OUTLINE
+            Text(
+              'MasterHanyu',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                foreground:
+                    Paint()
+                      ..style = PaintingStyle.stroke
+                      ..strokeWidth = 2
+                      ..color = const Color.fromARGB(
+                        255,
+                        122,
+                        8,
+                        216,
+                      ).withValues(alpha: 0.4),
+              ),
             ),
-          ),
-          SizedBox(height: 6),
-          Text(
-            "Learn Chinese with confidence",
-            style: TextStyle(color: Colors.white70, fontSize: 13),
-          ),
-        ],
+            // FILL
+            const Text(
+              'MasterHanyu',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
