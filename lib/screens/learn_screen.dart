@@ -1,33 +1,25 @@
 import 'package:flutter/material.dart';
 import '../models/lesson.dart';
 import '../widgets/lesson_card.dart';
+import 'pinyin_menu_screen.dart';
 
 class LearnScreen extends StatelessWidget {
   const LearnScreen({super.key});
 
   List<Lesson> get lessons => [
-        Lesson(
-          category: 'Basics',
-          title: 'Greetings',
-          description:
-              'Learn essential Chinese greetings for daily conversations',
-          words: 6,
-          level: 'Beginner',
-          progress: 0.0,
-          imageUrl:
-              'https://images.unsplash.com/photo-1529156069898-49953e39b3ac',
-        ),
-        Lesson(
-          category: 'Basics',
-          title: 'Numbers 1-10',
-          description: 'Master basic Chinese numbers from one to ten',
-          words: 10,
-          level: 'Beginner',
-          progress: 0.0,
-          imageUrl:
-              'https://images.unsplash.com/photo-1522202176988-66273c2fd55f',
-        ),
-      ];
+    Lesson(
+      title: 'Introduction to Pinyin',
+      description: 'Learn Chinese pronunciation using the Pinyin system',
+      progress: 0.0,
+      imageAsset: 'assets/image/pinyin.png',
+    ),
+    Lesson(
+      title: 'Greetings',
+      description: 'Master basic Chinese greetings for daily conversations',
+      progress: 0.0,
+      imageAsset: 'assets/image/greetings.png',
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -56,19 +48,23 @@ class LearnScreen extends StatelessWidget {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    // OUTLINE
                     Text(
                       'Lesson',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        foreground: Paint()
-                          ..style = PaintingStyle.stroke
-                          ..strokeWidth = 2
-                          ..color = const Color.fromARGB(255, 122, 8, 216).withValues(alpha: 0.4),
+                        foreground:
+                            Paint()
+                              ..style = PaintingStyle.stroke
+                              ..strokeWidth = 2
+                              ..color = const Color.fromARGB(
+                                255,
+                                122,
+                                8,
+                                216,
+                              ).withValues(alpha: 0.4),
                       ),
                     ),
-                    // FILL
                     const Text(
                       'Lesson',
                       style: TextStyle(
@@ -84,29 +80,33 @@ class LearnScreen extends StatelessWidget {
 
             // CONTENT
             Expanded(
-              child: SingleChildScrollView(
+              child: ListView.builder(
                 padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Choose a Lesson',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Select a topic to start learning',
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
-                    const SizedBox(height: 20),
-                    ...lessons.map(
-                      (lesson) => LessonCard(lesson: lesson),
-                    ),
-                  ],
-                ),
+                itemCount: lessons.length,
+                itemBuilder: (context, index) {
+                  final lesson = lessons[index];
+
+                  return LessonCard(
+                    lesson: lesson,
+                    onTap: () {
+                      // ✅ NAVIGATION LOGIC
+                      if (lesson.title == 'Introduction to Pinyin') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const PinyinMenuScreen(),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Lesson coming soon 👀'),
+                          ),
+                        );
+                      }
+                    },
+                  );
+                },
               ),
             ),
           ],

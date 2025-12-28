@@ -19,25 +19,28 @@ class HomeScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF6F3FF),
       body: SafeArea(
         child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 30),
           child: Column(
             children: [
               _header(),
-              const SizedBox(height: 14),
+              const SizedBox(height: 16),
 
               _welcomeCard(),
+              const SizedBox(height: 20),
+
+              _todayFocus(context),
               const SizedBox(height: 20),
 
               _activeCourse(),
               const SizedBox(height: 24),
 
-              _quickAccess(context),
+              _quickAccess(),
               const SizedBox(height: 24),
 
               _dailyGoal(context),
               const SizedBox(height: 24),
 
               _learningTip(),
-              const SizedBox(height: 40),
             ],
           ),
         ),
@@ -51,7 +54,7 @@ class HomeScreen extends StatelessWidget {
   Widget _header() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.symmetric(vertical: 22),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -66,7 +69,6 @@ class HomeScreen extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // OUTLINE
             Text(
               'MasterHanyu',
               style: TextStyle(
@@ -76,15 +78,9 @@ class HomeScreen extends StatelessWidget {
                     Paint()
                       ..style = PaintingStyle.stroke
                       ..strokeWidth = 2
-                      ..color = const Color.fromARGB(
-                        255,
-                        122,
-                        8,
-                        216,
-                      ).withValues(alpha: 0.4),
+                      ..color = Colors.black.withValues(alpha: 0.25),
               ),
             ),
-            // FILL
             const Text(
               'MasterHanyu',
               style: TextStyle(
@@ -111,13 +107,12 @@ class HomeScreen extends StatelessWidget {
             "Hello, ${user.name.isNotEmpty ? user.name : user.username}!",
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-
           const SizedBox(height: 4),
           const Text(
             "Ready to continue your Chinese learning journey?",
             style: TextStyle(color: Colors.grey),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
@@ -145,20 +140,20 @@ class HomeScreen extends StatelessWidget {
   }
 
   // ------------------------------------------------------------
-  // ACTIVE COURSE
+  // TODAY'S FOCUS ⭐ (NEW)
   // ------------------------------------------------------------
-  Widget _activeCourse() {
+  Widget _todayFocus(BuildContext context) {
     return _card(
-      title: "Active Lessons",
+      title: "Today's Focus",
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
+          CircleAvatar(
+            radius: 22,
+            backgroundColor: Colors.deepPurple.shade100,
+            child: const Icon(
+              Icons.record_voice_over,
+              color: Colors.deepPurple,
             ),
-            child: const Icon(Icons.menu_book, color: Colors.deepPurple),
           ),
           const SizedBox(width: 14),
           const Expanded(
@@ -166,26 +161,22 @@ class HomeScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Introduction to Chinese",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  "Pinyin Introduction",
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 4),
-                Text("6 / 12 lessons", style: TextStyle(color: Colors.grey)),
-                SizedBox(height: 6),
-                AnimatedProgressBar(
-                  value: 0.5,
-                  height: 6,
-                  activeColor: Colors.deepPurple,
+                Text(
+                  "Practice pronunciation & tones",
+                  style: TextStyle(color: Colors.grey),
                 ),
               ],
             ),
           ),
-          const Text(
-            "50%",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.deepPurple,
-            ),
+          IconButton(
+            icon: const Icon(Icons.play_circle_fill, color: Colors.deepPurple),
+            onPressed: () {
+              onQuickAccessTap(1); // Learn tab
+            },
           ),
         ],
       ),
@@ -193,9 +184,35 @@ class HomeScreen extends StatelessWidget {
   }
 
   // ------------------------------------------------------------
-  // QUICK ACCESS (NO OVERFLOW ✅)
+  // ACTIVE COURSE
   // ------------------------------------------------------------
-  Widget _quickAccess(BuildContext context) {
+  Widget _activeCourse() {
+    return _card(
+      title: "Active Lesson",
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          Text(
+            "Introduction to Chinese",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 4),
+          Text("6 / 12 lessons", style: TextStyle(color: Colors.grey)),
+          SizedBox(height: 10),
+          AnimatedProgressBar(
+            value: 0.5,
+            height: 6,
+            activeColor: Colors.deepPurple,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ------------------------------------------------------------
+  // QUICK ACCESS
+  // ------------------------------------------------------------
+  Widget _quickAccess() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -211,29 +228,21 @@ class HomeScreen extends StatelessWidget {
             children: [
               _QuickTile(
                 icon: Icons.menu_book,
-                label: "Browse Lessons",
+                label: "Lessons",
                 color: Colors.pink,
-                onTap: () {
-                  onQuickAccessTap(1); // Learn tab
-                },
+                onTap: () => onQuickAccessTap(1),
               ),
-
               _QuickTile(
-                icon: Icons.emoji_events,
-                label: "Take a Quiz",
+                icon: Icons.quiz,
+                label: "Quiz",
                 color: Colors.purple,
-                onTap: () {
-                  onQuickAccessTap(2); // Practice tab
-                },
+                onTap: () => onQuickAccessTap(2),
               ),
-
               _QuickTile(
-                icon: Icons.trending_up,
-                label: "View Progress",
+                icon: Icons.person,
+                label: "Profile",
                 color: Colors.green,
-                onTap: () {
-                  onQuickAccessTap(3); // Me tab
-                },
+                onTap: () => onQuickAccessTap(3),
               ),
             ],
           ),
@@ -298,13 +307,13 @@ class HomeScreen extends StatelessWidget {
               SizedBox(width: 8),
               Text(
                 "Learning Tip",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ],
           ),
           SizedBox(height: 10),
           Text(
-            "Practice pronunciation daily for just 5 minutes to improve your speaking skills faster!",
+            "Practice pronunciation daily for just 5 minutes to improve your speaking skills!",
           ),
         ],
       ),
@@ -394,23 +403,18 @@ class _QuickTile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: SizedBox(
-        width: 100,
+        width: 90,
         child: Column(
           children: [
-            Container(
-              height: 64,
-              width: 64,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
-                shape: BoxShape.circle,
-              ),
+            CircleAvatar(
+              radius: 28,
+              backgroundColor: color.withValues(alpha: 0.15),
               child: Icon(icon, color: color),
             ),
             const SizedBox(height: 8),
             Text(
               label,
               textAlign: TextAlign.center,
-              maxLines: 2,
               style: const TextStyle(fontSize: 13),
             ),
           ],
