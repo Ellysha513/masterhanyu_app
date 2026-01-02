@@ -143,7 +143,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                   onPressed:
                                       (!isFormValid || loading) ? null : signup,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF0A4D68),
+                                    backgroundColor: const Color(0xFF5C56D6),
                                     disabledBackgroundColor:
                                         Colors.grey.shade400,
                                     padding: const EdgeInsets.symmetric(

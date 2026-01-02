@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'pinyin_introduction_screen.dart';
 
 class PinyinMenuScreen extends StatelessWidget {
   const PinyinMenuScreen({super.key});
@@ -25,10 +26,17 @@ class PinyinMenuScreen extends StatelessWidget {
               color: const Color.fromARGB(255, 101, 101, 230),
               title: 'Pinyin Introduction',
               subtitle: 'What is Pinyin, initials & finals',
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const PinyinIntroScreen(),
+                  ),
+                );
+              },
             ),
             _lessonTile(
-              icon: Icons.text_fields,
+              icon: Icons.record_voice_over,
               color: const Color.fromARGB(255, 254, 122, 204),
               title: 'Learn Syllables',
               subtitle: 'Pronounce Pinyin syllables',
@@ -62,7 +70,7 @@ class PinyinMenuScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha:0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),

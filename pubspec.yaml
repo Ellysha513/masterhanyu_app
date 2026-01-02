@@ -41,6 +41,7 @@ dependencies:
   video_player: ^2.8.6
   image_picker: ^1.0.7
   cached_network_image: ^3.3.1
+  audioplayers: ^6.1.0
 
 # dev_dependencies specify packages needed for development and testing.
 # These dependencies are not included in the final build of your application.
@@ -61,10 +62,84 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   assets:
+  # images, video #
     - assets/image/logo1.png
     - assets/video/cat_typing.mp4
     - assets/image/pinyin.png
     - assets/image/greetings.png
+    - assets/image/finish.png
+    - assets/image/syllable_ba.png
+    - assets/image/ba.png
+    - assets/image/pinyin_initials.png
+    - assets/image/pinyin_finals.png
+
+  # audio syllable #
+    - assets/audio/syllable/ba.mp3
+
+  # audio pinyin initials #
+    - assets/audio/initial/b.mp3
+    - assets/audio/initial/c.mp3
+    - assets/audio/initial/ch.mp3
+    - assets/audio/initial/d.mp3
+    - assets/audio/initial/f.mp3
+    - assets/audio/initial/g.mp3
+    - assets/audio/initial/h.mp3
+    - assets/audio/initial/j.mp3
+    - assets/audio/initial/k.mp3
+    - assets/audio/initial/l.mp3
+    - assets/audio/initial/m.mp3
+    - assets/audio/initial/n.mp3
+    - assets/audio/initial/p.mp3
+    - assets/audio/initial/q.mp3
+    - assets/audio/initial/r.mp3
+    - assets/audio/initial/s.mp3
+    - assets/audio/initial/sh.mp3
+    - assets/audio/initial/t.mp3
+    - assets/audio/initial/w.mp3
+    - assets/audio/initial/x.mp3
+    - assets/audio/initial/y.mp3
+    - assets/audio/initial/z.mp3
+    - assets/audio/initial/zh.mp3
+
+  # audio pinyin finals #
+    - assets/audio/final/a.mp3
+    - assets/audio/final/ai.mp3
+    - assets/audio/final/an.mp3
+    - assets/audio/final/ang.mp3
+    - assets/audio/final/ao.mp3
+    - assets/audio/final/e.mp3
+    - assets/audio/final/ei.mp3
+    - assets/audio/final/en.mp3
+    - assets/audio/final/eng.mp3
+    - assets/audio/final/er.mp3
+    - assets/audio/final/i.mp3
+    - assets/audio/final/ia.mp3
+    - assets/audio/final/ian.mp3
+    - assets/audio/final/iang.mp3
+    - assets/audio/final/iao.mp3
+    - assets/audio/final/ie.mp3
+    - assets/audio/final/in.mp3
+    - assets/audio/final/ing.mp3
+    - assets/audio/final/iong.mp3
+    - assets/audio/final/iu.mp3
+    - assets/audio/final/o.mp3
+    - assets/audio/final/ou.mp3
+    - assets/audio/final/ong.mp3
+    - assets/audio/final/u.mp3
+    - assets/audio/final/ua.mp3
+    - assets/audio/final/uai.mp3
+    - assets/audio/final/uan.mp3
+    - assets/audio/final/uang.mp3
+    - assets/audio/final/ui.mp3
+    - assets/audio/final/un.mp3
+    - assets/audio/final/uo.mp3
+    - assets/audio/final/ü.mp3
+    - assets/audio/final/üan.mp3
+    - assets/audio/final/üe.mp3
+    - assets/audio/final/ün.mp3
+  
+  # audio #
+    - assets/audio/finish.mp3
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

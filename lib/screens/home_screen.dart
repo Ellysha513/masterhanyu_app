@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/user_profile.dart';
 import '../widgets/animated_progress.dart';
-import 'learn_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final UserProfile user;
@@ -32,12 +31,6 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 20),
 
               _activeCourse(),
-              const SizedBox(height: 24),
-
-              _quickAccess(),
-              const SizedBox(height: 24),
-
-              _dailyGoal(context),
               const SizedBox(height: 24),
 
               _learningTip(),
@@ -161,7 +154,7 @@ class HomeScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Pinyin Introduction",
+                  "Introduction",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 4),
@@ -202,88 +195,7 @@ class HomeScreen extends StatelessWidget {
           AnimatedProgressBar(
             value: 0.5,
             height: 6,
-            activeColor: Colors.deepPurple,
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ------------------------------------------------------------
-  // QUICK ACCESS
-  // ------------------------------------------------------------
-  Widget _quickAccess() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Quick Access",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 14),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _QuickTile(
-                icon: Icons.menu_book,
-                label: "Lessons",
-                color: Colors.pink,
-                onTap: () => onQuickAccessTap(1),
-              ),
-              _QuickTile(
-                icon: Icons.quiz,
-                label: "Quiz",
-                color: Colors.purple,
-                onTap: () => onQuickAccessTap(2),
-              ),
-              _QuickTile(
-                icon: Icons.person,
-                label: "Profile",
-                color: Colors.green,
-                onTap: () => onQuickAccessTap(3),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ------------------------------------------------------------
-  // DAILY GOAL
-  // ------------------------------------------------------------
-  Widget _dailyGoal(BuildContext context) {
-    return _card(
-      title: "Daily Goal",
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Learn 10 new words"),
-          const SizedBox(height: 6),
-          const Align(
-            alignment: Alignment.centerRight,
-            child: Text(
-              "7 / 10",
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-            ),
-          ),
-          const SizedBox(height: 6),
-          const AnimatedProgressBar(
-            value: 0.7,
-            height: 8,
-            activeColor: Colors.blue,
-          ),
-          const SizedBox(height: 14),
-          _AnimatedButton(
-            label: "Continue Learning",
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const LearnScreen()),
-              );
-            },
+            activeColor: Color.fromARGB(255, 248, 151, 240),
           ),
         ],
       ),
@@ -381,45 +293,6 @@ class _InfoRow extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold, color: color),
         ),
       ],
-    );
-  }
-}
-
-class _QuickTile extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _QuickTile({
-    required this.icon,
-    required this.label,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: SizedBox(
-        width: 90,
-        child: Column(
-          children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: color.withValues(alpha: 0.15),
-              child: Icon(icon, color: color),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 13),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

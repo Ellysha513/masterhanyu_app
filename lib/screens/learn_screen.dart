@@ -8,12 +8,14 @@ class LearnScreen extends StatelessWidget {
 
   List<Lesson> get lessons => [
     Lesson(
-      title: 'Introduction to Pinyin',
+      id: 'pinyin_intro', // ✅ stable ID
+      title: 'Introduction',
       description: 'Learn Chinese pronunciation using the Pinyin system',
       progress: 0.0,
       imageAsset: 'assets/image/pinyin.png',
     ),
     Lesson(
+      id: 'greetings',
       title: 'Greetings',
       description: 'Master basic Chinese greetings for daily conversations',
       progress: 0.0,
@@ -28,57 +30,8 @@ class LearnScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // HEADER
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Color.fromARGB(255, 160, 160, 248),
-                    Color.fromARGB(255, 204, 134, 231),
-                    Color.fromARGB(255, 248, 151, 240),
-                  ],
-                ),
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(28),
-                ),
-              ),
-              child: Center(
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Text(
-                      'Lesson',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        foreground:
-                            Paint()
-                              ..style = PaintingStyle.stroke
-                              ..strokeWidth = 2
-                              ..color = const Color.fromARGB(
-                                255,
-                                122,
-                                8,
-                                216,
-                              ).withValues(alpha: 0.4),
-                      ),
-                    ),
-                    const Text(
-                      'Lesson',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            _header(),
 
-            // CONTENT
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.all(20),
@@ -89,8 +42,8 @@ class LearnScreen extends StatelessWidget {
                   return LessonCard(
                     lesson: lesson,
                     onTap: () {
-                      // ✅ NAVIGATION LOGIC
-                      if (lesson.title == 'Introduction to Pinyin') {
+                      // ✅ SAFE NAVIGATION
+                      if (lesson.id == 'pinyin_intro') {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -110,6 +63,33 @@ class LearnScreen extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _header() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color.fromARGB(255, 160, 160, 248),
+            Color.fromARGB(255, 204, 134, 231),
+            Color.fromARGB(255, 248, 151, 240),
+          ],
+        ),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+      ),
+      child: const Center(
+        child: Text(
+          'Lesson',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
     );

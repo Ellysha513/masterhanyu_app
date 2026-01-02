@@ -8,7 +8,6 @@ import 'screens/login_screen.dart';
 import 'screens/intro_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/learn_screen.dart';
-import 'screens/practice_screen.dart';
 import 'screens/me_screen.dart';
 
 Future<void> main() async {
@@ -141,7 +140,6 @@ class _RootTabsState extends State<RootTabs> {
     _tabs = [
       HomeScreen(user: widget.user, onQuickAccessTap: _switchTab),
       const LearnScreen(),
-      const PracticeScreen(),
       MeScreen(user: widget.user),
     ];
   }
@@ -166,7 +164,6 @@ class _RootTabsState extends State<RootTabs> {
             icon: Icon(Icons.library_books),
             label: 'Learn',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.quiz), label: 'Practice'),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
             label: 'Me',
