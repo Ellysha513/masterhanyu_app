@@ -1,17 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/lesson.dart';
 import '../widgets/lesson_card.dart';
 import 'pinyin_menu_screen.dart';
 
-class LearnScreen extends StatelessWidget {
+class LearnScreen extends StatefulWidget {
   const LearnScreen({super.key});
+
+  @override
+  State<LearnScreen> createState() => _LearnScreenState();
+}
+
+class _LearnScreenState extends State<LearnScreen> {
+  double pinyinProgress = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProgress();
+  }
+
+  Future<void> _loadProgress() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = Supabase.instance.client.auth.currentUser!.id;
+    setState(() {
+      pinyinProgress = prefs.getDouble('pinyin_intro_progress_$userId') ?? 0.0;
+    });
+  }
 
   List<Lesson> get lessons => [
     Lesson(
-      id: 'pinyin_intro', // ✅ stable ID
+      id: 'pinyin_intro',
       title: 'Introduction',
       description: 'Learn Chinese pronunciation using the Pinyin system',
-      progress: 0.0,
+      progress: pinyinProgress,
       imageAsset: 'assets/image/pinyin.png',
     ),
     Lesson(
@@ -31,7 +54,6 @@ class LearnScreen extends StatelessWidget {
         child: Column(
           children: [
             _header(),
-
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.all(20),
@@ -41,15 +63,15 @@ class LearnScreen extends StatelessWidget {
 
                   return LessonCard(
                     lesson: lesson,
-                    onTap: () {
-                      // ✅ SAFE NAVIGATION
+                    onTap: () async {
                       if (lesson.id == 'pinyin_intro') {
-                        Navigator.push(
+                        await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => const PinyinMenuScreen(),
                           ),
                         );
+                        _loadProgress(); // 🔁 refresh after return
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -82,14 +104,38 @@ class LearnScreen extends StatelessWidget {
         ),
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
       ),
-      child: const Center(
-        child: Text(
-          'Lesson',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+      child: Center(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // OUTLINE
+            Text(
+              'Lesson',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                foreground:
+                    Paint()
+                      ..style = PaintingStyle.stroke
+                      ..strokeWidth = 2
+                      ..color = const Color.fromARGB(
+                        255,
+                        122,
+                        8,
+                        216,
+                      ).withValues(alpha: 0.4),
+              ),
+            ),
+            // FILL
+            const Text(
+              'Lesson',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
       ),
     );

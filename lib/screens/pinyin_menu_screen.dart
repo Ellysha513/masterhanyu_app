@@ -1,15 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'pinyin_introduction_screen.dart';
 
-class PinyinMenuScreen extends StatelessWidget {
+class PinyinMenuScreen extends StatefulWidget {
   const PinyinMenuScreen({super.key});
+
+  @override
+  State<PinyinMenuScreen> createState() => _PinyinMenuScreenState();
+}
+
+class _PinyinMenuScreenState extends State<PinyinMenuScreen> {
+  double progress = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProgress();
+  }
+
+  Future<void> _loadProgress() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = Supabase.instance.client.auth.currentUser!.id;
+
+    setState(() {
+      progress = prefs.getDouble('pinyin_intro_progress_$userId') ?? 0.0;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F3FF),
       appBar: AppBar(
-        title: const Text('Pronunciation'),
+        title: const Text('Intoduction'),
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: Colors.black,
@@ -26,13 +50,12 @@ class PinyinMenuScreen extends StatelessWidget {
               color: const Color.fromARGB(255, 101, 101, 230),
               title: 'Pinyin Introduction',
               subtitle: 'What is Pinyin, initials & finals',
-              onTap: () {
-                Navigator.push(
+              onTap: () async {
+                await Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => const PinyinIntroScreen(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const PinyinIntroScreen()),
                 );
+                _loadProgress(); // 🔁 refresh after return
               },
             ),
             _lessonTile(
@@ -53,7 +76,7 @@ class PinyinMenuScreen extends StatelessWidget {
               icon: Icons.question_answer,
               color: const Color.fromARGB(255, 53, 195, 243),
               title: 'Quiz',
-              subtitle: 'Test your pronunciation',
+              subtitle: 'Test your pronunciation and listening skills',
               onTap: () {},
             ),
           ],
@@ -78,21 +101,21 @@ class PinyinMenuScreen extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Text(
-            'Pronunciation Progress',
+        children: [
+          const Text(
+            'Topic Progress',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           LinearProgressIndicator(
-            value: 0.0,
+            value: progress,
             color: Colors.deepPurple,
-            backgroundColor: Color(0xFFE0DFFF),
+            backgroundColor: const Color(0xFFE0DFFF),
           ),
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           Text(
-            '0% completed',
-            style: TextStyle(fontSize: 12, color: Colors.grey),
+            '${(progress * 100).toInt()}% completed',
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
           ),
         ],
       ),

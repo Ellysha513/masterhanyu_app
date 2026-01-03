@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'pinyin_menu_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PinyinIntroScreen extends StatefulWidget {
   const PinyinIntroScreen({super.key});
@@ -106,12 +107,14 @@ class _PinyinIntroScreenState extends State<PinyinIntroScreen> {
           ),
           const Spacer(),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               if (isLast) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => const PinyinMenuScreen()),
-                );
+                final prefs = await SharedPreferences.getInstance();
+                final userId = Supabase.instance.client.auth.currentUser!.id;
+                await prefs.setDouble('pinyin_intro_progress_$userId', 0.25);
+
+                if (!mounted) return;
+                Navigator.pop(context);
               } else {
                 next();
               }

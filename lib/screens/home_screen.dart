@@ -71,7 +71,12 @@ class HomeScreen extends StatelessWidget {
                     Paint()
                       ..style = PaintingStyle.stroke
                       ..strokeWidth = 2
-                      ..color = Colors.black.withValues(alpha: 0.25),
+                      ..color = const Color.fromARGB(
+                        255,
+                        122,
+                        8,
+                        216,
+                      ).withValues(alpha: 0.4),
               ),
             ),
             const Text(
