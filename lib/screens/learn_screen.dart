@@ -24,10 +24,17 @@ class _LearnScreenState extends State<LearnScreen> {
   Future<void> _loadProgress() async {
     final prefs = await SharedPreferences.getInstance();
     final userId = Supabase.instance.client.auth.currentUser!.id;
+    final intro = prefs.getDouble('pinyin_intro_progress_$userId') ?? 0.0;
+    final syllables =
+        prefs.getDouble('learn_syllables_progress_$userId') ?? 0.0;
+
     setState(() {
-      pinyinProgress = prefs.getDouble('pinyin_intro_progress_$userId') ?? 0.0;
+      // Each sub-lesson contributes 25%; intro + syllables together = 50%
+      pinyinProgress = (intro + syllables).clamp(0.0, 1.0);
     });
   }
+
+  
 
   List<Lesson> get lessons => [
     Lesson(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'pinyin_introduction_screen.dart';
+import 'learn_syllables_screen.dart';
 
 class PinyinMenuScreen extends StatefulWidget {
   const PinyinMenuScreen({super.key});
@@ -22,9 +23,12 @@ class _PinyinMenuScreenState extends State<PinyinMenuScreen> {
   Future<void> _loadProgress() async {
     final prefs = await SharedPreferences.getInstance();
     final userId = Supabase.instance.client.auth.currentUser!.id;
+    final intro = prefs.getDouble('pinyin_intro_progress_$userId') ?? 0.0;
+    final syllables =
+        prefs.getDouble('learn_syllables_progress_$userId') ?? 0.0;
 
     setState(() {
-      progress = prefs.getDouble('pinyin_intro_progress_$userId') ?? 0.0;
+      progress = intro + syllables;
     });
   }
 
@@ -33,7 +37,7 @@ class _PinyinMenuScreenState extends State<PinyinMenuScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F3FF),
       appBar: AppBar(
-        title: const Text('Intoduction'),
+        title: const Text('Introduction'),
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: Colors.black,
@@ -62,8 +66,16 @@ class _PinyinMenuScreenState extends State<PinyinMenuScreen> {
               icon: Icons.record_voice_over,
               color: const Color.fromARGB(255, 254, 122, 204),
               title: 'Learn Syllables',
-              subtitle: 'Pronounce Pinyin syllables',
-              onTap: () {},
+              subtitle: 'Listening Pinyin syllables',
+              onTap: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const LearnSyllablesScreen(),
+                  ),
+                );
+                _loadProgress(); // 🔁 refresh after return
+              },
             ),
             _lessonTile(
               icon: Icons.graphic_eq,
@@ -76,7 +88,7 @@ class _PinyinMenuScreenState extends State<PinyinMenuScreen> {
               icon: Icons.question_answer,
               color: const Color.fromARGB(255, 53, 195, 243),
               title: 'Quiz',
-              subtitle: 'Test your pronunciation and listening skills',
+              subtitle: 'Test your Pinyin knowledge',
               onTap: () {},
             ),
           ],

@@ -5,6 +5,7 @@ import '../models/user_profile.dart';
 import '../theme/app_background.dart';
 import '../widgets/stat_graph_sheet.dart';
 import 'account_settings_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MeScreen extends StatefulWidget {
   final UserProfile user;
@@ -15,8 +16,56 @@ class MeScreen extends StatefulWidget {
   State<MeScreen> createState() => _MeScreenState();
 }
 
-class _MeScreenState extends State<MeScreen> {
+class _MeScreenState extends State<MeScreen> with WidgetsBindingObserver {
+  int totalXP = 0;
+  int todayXP = 0;
+  int totalMinutes = 0;
+  int todayMinutes = 0;
   UserProfile get user => widget.user;
+
+  Future<void> _loadStats() async {
+    if (!mounted) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    final id = user.id;
+
+    if (mounted) {
+      setState(() {
+        totalXP = prefs.getInt('xp_$id') ?? 0;
+        todayXP = prefs.getInt('today_xp_$id') ?? 0;
+        totalMinutes = prefs.getInt('total_minutes_$id') ?? 0;
+        todayMinutes = prefs.getInt('today_minutes_$id') ?? 0;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _loadStats();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reload stats whenever the widget's dependencies change
+    // This helps when switching between tabs
+    _loadStats();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _loadStats();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +124,12 @@ class _MeScreenState extends State<MeScreen> {
                     Paint()
                       ..style = PaintingStyle.stroke
                       ..strokeWidth = 2
-                      ..color = const Color.fromARGB(255, 122, 8, 216).withValues(alpha: 0.4),
+                      ..color = const Color.fromARGB(
+                        255,
+                        122,
+                        8,
+                        216,
+                      ).withValues(alpha: 0.4),
               ),
             ),
             // FILL
@@ -103,9 +157,11 @@ class _MeScreenState extends State<MeScreen> {
         onTap: () async {
           await Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => AccountSettingsScreen(user: user)),
+            MaterialPageRoute(
+              builder: (_) => AccountSettingsScreen(user: user),
+            ),
           );
-          setState(() {}); // 🔥 force rebuild
+          _loadStats(); // Refresh stats after returning
         },
         child: Container(
           padding: const EdgeInsets.all(16),
@@ -193,13 +249,14 @@ class _MeScreenState extends State<MeScreen> {
 
           Row(
             children: [
-              const Expanded(
-                child: StatCard(title: "126 XP", subtitle: "Total XP"),
+              Expanded(
+                child: StatCard(title: "$totalXP XP", subtitle: "Total XP"),
               ),
+
               const SizedBox(width: 12),
               Expanded(
                 child: StatCard(
-                  title: "0 XP",
+                  title: "$todayXP XP",
                   subtitle: "Today's XP",
                   isClickable: true,
                 ),
@@ -211,13 +268,17 @@ class _MeScreenState extends State<MeScreen> {
 
           Row(
             children: [
-              const Expanded(
-                child: StatCard(title: "45 min", subtitle: "Total time"),
+              Expanded(
+                child: StatCard(
+                  title: "$totalMinutes min",
+                  subtitle: "Total time",
+                ),
               ),
+
               const SizedBox(width: 12),
               Expanded(
                 child: StatCard(
-                  title: "0",
+                  title: "$todayMinutes min",
                   subtitle: "Today's time",
                   isClickable: true,
                 ),

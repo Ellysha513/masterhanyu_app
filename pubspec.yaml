@@ -42,6 +42,7 @@ dependencies:
   image_picker: ^1.0.7
   cached_network_image: ^3.3.1
   audioplayers: ^6.1.0
+  confetti: ^0.7.0
 
 # dev_dependencies specify packages needed for development and testing.
 # These dependencies are not included in the final build of your application.
@@ -70,11 +71,43 @@ flutter:
     - assets/image/finish.png
     - assets/image/syllable_ba.png
     - assets/image/ba.png
-    - assets/image/pinyin_initials.png
-    - assets/image/pinyin_finals.png
 
   # audio syllable #
     - assets/audio/syllable/ba.mp3
+    - assets/audio/syllable/mao.mp3
+    - assets/audio/syllable/ne.mp3
+    - assets/audio/syllable/teng.mp3
+    - assets/audio/syllable/hou.mp3
+    - assets/audio/syllable/kong.mp3
+    - assets/audio/syllable/qi.mp3
+    - assets/audio/syllable/jia.mp3
+    - assets/audio/syllable/qiao.mp3
+    - assets/audio/syllable/jian.mp3
+    - assets/audio/syllable/niu.mp3
+    - assets/audio/syllable/yin.mp3
+    - assets/audio/syllable/xiong.mp3
+    - assets/audio/syllable/wu.mp3
+    - assets/audio/syllable/zhua.mp3
+    - assets/audio/syllable/shuai.mp3
+    - assets/audio/syllable/zuan.mp3
+    - assets/audio/syllable/chuang.mp3
+    - assets/audio/syllable/cuo.mp3
+    - assets/audio/syllable/sun.mp3
+    - assets/audio/syllable/ju.mp3
+    - assets/audio/syllable/lüe.mp3
+    - assets/audio/syllable/quan.mp3
+    - assets/audio/syllable/yun.mp3
+    - assets/audio/syllable/dang.mp3
+    - assets/audio/syllable/die.mp3
+    - assets/audio/syllable/er.mp3
+    - assets/audio/syllable/fan.mp3
+    - assets/audio/syllable/gen.mp3
+    - assets/audio/syllable/lei.mp3
+    - assets/audio/syllable/mo.mp3
+    - assets/audio/syllable/pai.mp3
+    - assets/audio/syllable/qing.mp3
+    - assets/audio/syllable/xiang.mp3
+    - assets/audio/syllable/rui.mp3
 
   # audio pinyin initials #
     - assets/audio/initial/b.mp3
@@ -140,6 +173,8 @@ flutter:
   
   # audio #
     - assets/audio/finish.mp3
+    - assets/audio/correct.mp3
+    - assets/audio/wrong.mp3
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
