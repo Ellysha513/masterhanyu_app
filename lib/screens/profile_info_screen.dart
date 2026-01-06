@@ -92,6 +92,10 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Profile updated successfully')),
     );
+
+    // Navigate back to me_screen
+    if (!mounted) return;
+    Navigator.pop(context);
   }
 
   @override
@@ -105,7 +109,7 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: Colors.black,
-      ), 
+      ),
       // ------------------------------------------------------------
       // BODY
       // ------------------------------------------------------------
@@ -124,10 +128,10 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
                 GestureDetector(
                   onTap: _pickAndUploadImage,
                   child: CircleAvatar(
-                    radius: 42,
+                    radius: 51,
                     backgroundColor: Colors.white,
                     child: CircleAvatar(
-                      radius: 38,
+                      radius: 45,
                       backgroundImage:
                           widget.user.imagePath != null
                               ? NetworkImage(widget.user.imagePath!)

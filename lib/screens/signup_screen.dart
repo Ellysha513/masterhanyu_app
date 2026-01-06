@@ -113,6 +113,11 @@ class _SignupScreenState extends State<SignupScreen> {
                                   color: Color(0xFF1A2B3C),
                                 ),
                               ),
+                              const SizedBox(height: 6),
+                              const Text(
+                                "Register to start learning Chinese!",
+                                style: TextStyle(color: Color(0xFF6B7280)),
+                              ),
 
                               const SizedBox(height: 25),
 
@@ -216,6 +221,7 @@ class _SignupScreenState extends State<SignupScreen> {
       decoration: InputDecoration(
         prefixIcon: Icon(icon),
         hintText: hint,
+        helperText: obscure ? 'Min 6 characters' : null,
         filled: true,
         fillColor: const Color(0xFFF5F7FA),
         border: OutlineInputBorder(

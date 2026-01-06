@@ -6,14 +6,22 @@ import '../theme/app_background.dart';
 import '../widgets/stat_graph_sheet.dart';
 import 'account_settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MeScreen extends StatefulWidget {
   final UserProfile user;
 
-  const MeScreen({super.key, required this.user});
+  // GlobalKey to access state for manual refresh
+  final GlobalKey<_MeScreenState> _stateKey = GlobalKey<_MeScreenState>();
+
+  MeScreen({super.key, required this.user});
 
   @override
   State<MeScreen> createState() => _MeScreenState();
+
+  void refreshStats() {
+    _stateKey.currentState?.refreshStatsNow();
+  }
 }
 
 class _MeScreenState extends State<MeScreen> with WidgetsBindingObserver {
@@ -21,7 +29,8 @@ class _MeScreenState extends State<MeScreen> with WidgetsBindingObserver {
   int todayXP = 0;
   int totalMinutes = 0;
   int todayMinutes = 0;
-  UserProfile get user => widget.user;
+  UserProfile? _userOverride;
+  UserProfile get user => _userOverride ?? widget.user;
 
   Future<void> _loadStats() async {
     if (!mounted) return;
@@ -39,6 +48,71 @@ class _MeScreenState extends State<MeScreen> with WidgetsBindingObserver {
     }
   }
 
+  /// Get last 7 days of XP data for the graph
+  Future<List<double>> _getLast7DaysXP() async {
+    final prefs = await SharedPreferences.getInstance();
+    final id = user.id;
+    final data = <double>[];
+
+    for (int i = 6; i >= 0; i--) {
+      final date = DateTime.now().subtract(Duration(days: i));
+      final dateStr = date.toIso8601String().substring(0, 10);
+      final key = 'xp_daily_$id$dateStr';
+      final xp = prefs.getInt(key) ?? 0;
+      data.add(xp.toDouble());
+    }
+
+    return data;
+  }
+
+  /// Get last 7 days of minutes data for the graph
+  Future<List<double>> _getLast7DaysMinutes() async {
+    final prefs = await SharedPreferences.getInstance();
+    final id = user.id;
+    final data = <double>[];
+
+    for (int i = 6; i >= 0; i--) {
+      final date = DateTime.now().subtract(Duration(days: i));
+      final dateStr = date.toIso8601String().substring(0, 10);
+      final key = 'minutes_daily_$id$dateStr';
+      final minutes = prefs.getInt(key) ?? 0;
+      data.add(minutes.toDouble());
+    }
+
+    return data;
+  }
+
+  Future<void> _reloadUserFromSupabase() async {
+    try {
+      final client = Supabase.instance.client;
+      final data =
+          await client
+              .from('profiles')
+              .select('name, age, gender, avatar_url')
+              .eq('id', user.id)
+              .maybeSingle();
+
+      if (!mounted || data == null) return;
+
+      setState(() {
+        _userOverride = UserProfile(
+          id: widget.user.id,
+          username: widget.user.username,
+          email: widget.user.email,
+          name: (data['name'] as String?)?.trim() ?? '',
+          age: (data['age'] as int?) ?? 0,
+          gender:
+              (data['gender'] as String?)?.trim().isNotEmpty == true
+                  ? (data['gender'] as String).trim()
+                  : 'Female',
+          imagePath: data['avatar_url'] as String?,
+        );
+      });
+    } catch (_) {
+      // If fetch fails, keep existing user data
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -51,7 +125,10 @@ class _MeScreenState extends State<MeScreen> with WidgetsBindingObserver {
     super.didChangeDependencies();
     // Reload stats whenever the widget's dependencies change
     // This helps when switching between tabs
-    _loadStats();
+    // Use addPostFrameCallback to ensure timing is correct after screen transition
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadStats();
+    });
   }
 
   @override
@@ -65,6 +142,10 @@ class _MeScreenState extends State<MeScreen> with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       _loadStats();
     }
+  }
+
+  void refreshStatsNow() {
+    _loadStats();
   }
 
   @override
@@ -161,25 +242,26 @@ class _MeScreenState extends State<MeScreen> with WidgetsBindingObserver {
               builder: (_) => AccountSettingsScreen(user: user),
             ),
           );
+          await _reloadUserFromSupabase();
           _loadStats(); // Refresh stats after returning
         },
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.92),
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 12,
-                offset: const Offset(0, 6),
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 16,
+                offset: const Offset(0, 8),
               ),
             ],
           ),
           child: Row(
             children: [
               _avatar(),
-              const SizedBox(width: 14),
+              const SizedBox(width: 18),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,11 +269,11 @@ class _MeScreenState extends State<MeScreen> with WidgetsBindingObserver {
                     Text(
                       user.username,
                       style: const TextStyle(
-                        fontSize: 16,
+                        fontSize: 17,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Text(
                       user.email,
                       style: const TextStyle(fontSize: 13, color: Colors.grey),
@@ -209,10 +291,10 @@ class _MeScreenState extends State<MeScreen> with WidgetsBindingObserver {
 
   Widget _avatar() {
     return CircleAvatar(
-      radius: 26,
+      radius: 28,
       backgroundColor: Colors.deepPurple,
       child: CircleAvatar(
-        radius: 24,
+        radius: 26,
         backgroundColor: Colors.white,
         backgroundImage:
             user.imagePath != null
@@ -306,13 +388,6 @@ class _MeScreenState extends State<MeScreen> with WidgetsBindingObserver {
                 "Badges",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              Text(
-                "VIEW ALL",
-                style: TextStyle(
-                  color: Colors.deepPurple,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
             ],
           ),
           SizedBox(height: 12),
@@ -348,19 +423,34 @@ class StatCard extends StatelessWidget {
     return GestureDetector(
       onTap:
           isClickable
-              ? () {
+              ? () async {
+                final isXP = title.contains('XP');
+                final meScreenState =
+                    context.findAncestorStateOfType<_MeScreenState>();
+
+                if (meScreenState == null) return;
+
+                final data =
+                    isXP
+                        ? await meScreenState._getLast7DaysXP()
+                        : await meScreenState._getLast7DaysMinutes();
+
+                if (!context.mounted) return;
+
+                final dateRange =
+                    '(${DateTime.now().subtract(const Duration(days: 6)).month}/${DateTime.now().subtract(const Duration(days: 6)).day} - ${DateTime.now().month}/${DateTime.now().day})';
+
+                if (!context.mounted) return;
+
                 showModalBottomSheet(
                   context: context,
                   backgroundColor: Colors.transparent,
                   isScrollControlled: true,
                   builder:
                       (_) => StatGraphSheet(
-                        title:
-                            subtitle == "Today's XP"
-                                ? "XP"
-                                : "Study time (min)",
-                        dateRange: "(12/12/2025 - 18/12/2025)",
-                        values: const [0, 0, 0, 0, 0, 0, 0],
+                        title: isXP ? 'XP' : 'Study time (min)',
+                        dateRange: dateRange,
+                        values: data.cast<double>(),
                       ),
                 );
               }

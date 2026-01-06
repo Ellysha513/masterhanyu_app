@@ -12,8 +12,23 @@ class StatGraphSheet extends StatelessWidget {
     required this.values,
   });
 
+  /// Generate day labels for the last 7 days (T, F, S, etc.)
+  List<String> _getDayLabels() {
+    const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S']; // Sunday = 0
+    final labels = <String>[];
+
+    for (int i = 6; i >= 0; i--) {
+      final date = DateTime.now().subtract(Duration(days: i));
+      labels.add(days[date.weekday % 7]); // weekday: 1=Mon, 7=Sun
+    }
+
+    return labels;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final dayLabels = _getDayLabels();
+
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
       decoration: const BoxDecoration(
@@ -29,27 +44,76 @@ class StatGraphSheet extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(dateRange, style: const TextStyle(color: Colors.grey)),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
 
+          // Graph container with proper spacing
           SizedBox(
-            height: 160,
-            width: double.infinity,
-            child: CustomPaint(painter: _LineGraphPainter(values)),
+            height: 220,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Y-axis labels - right aligned to match grid
+                SizedBox(
+                  width: 35,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: const [
+                      Text(
+                        "40",
+                        style: TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                      Text(
+                        "30",
+                        style: TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                      Text(
+                        "20",
+                        style: TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                      Text(
+                        "10",
+                        style: TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                      Text(
+                        "0",
+                        style: TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                // Graph area
+                Expanded(
+                  child: CustomPaint(
+                    painter: _LineGraphPainter(values),
+                    size: Size.infinite,
+                  ),
+                ),
+              ],
+            ),
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 16),
 
-          // Days
+          // Day labels
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text("F"),
-              Text("S"),
-              Text("S"),
-              Text("M"),
-              Text("T"),
-              Text("W"),
-              Text("T"),
+            children: [
+              const SizedBox(width: 35), // Match Y-axis width
+              const SizedBox(width: 12),
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children:
+                      dayLabels
+                          .map(
+                            (day) =>
+                                Text(day, style: const TextStyle(fontSize: 12)),
+                          )
+                          .toList(),
+                ),
+              ),
             ],
           ),
         ],
@@ -65,18 +129,39 @@ class _LineGraphPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // Deep purple colors to match the app theme
     final paintLine =
         Paint()
-          ..color = const Color(0xFF4CD4B0)
+          ..color = const Color(0xFF5C56D6) // Deep purple
           ..strokeWidth = 3
           ..style = PaintingStyle.stroke;
 
-    final paintDot = Paint()..color = const Color(0xFF22C38E);
+    final paintDot = Paint()..color = const Color(0xFF5C56D6); // Deep purple
 
-    final path = Path();
+    // Grid line paint
+    final paintGrid =
+        Paint()
+          ..color = Colors.grey.withValues(alpha: 0.2)
+          ..strokeWidth = 1
+          ..style = PaintingStyle.stroke;
 
     double spacing = size.width / (values.length - 1);
-    double maxValue = 40; // fixed scale like screenshot
+
+    // Dynamically calculate maxValue from data, with a minimum scale
+    double maxValue =
+        values.isNotEmpty ? values.reduce((a, b) => a > b ? a : b) : 40;
+    if (maxValue == 0) maxValue = 40; // Default if all values are 0
+
+    // Add 20% padding to the top so the highest value doesn't touch the ceiling
+    maxValue = maxValue * 1.2;
+
+    // Draw horizontal grid lines (for every 10 units)
+    for (int i = 0; i <= 4; i++) {
+      double y = size.height - (size.height / 4) * i;
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paintGrid);
+    }
+
+    final path = Path();
 
     for (int i = 0; i < values.length; i++) {
       double x = spacing * i;

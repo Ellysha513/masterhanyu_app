@@ -129,22 +129,68 @@ class RootTabs extends StatefulWidget {
   State<RootTabs> createState() => _RootTabsState();
 }
 
-class _RootTabsState extends State<RootTabs> {
+class _RootTabsState extends State<RootTabs> with WidgetsBindingObserver {
   int _currentIndex = 0;
 
-  late final List<Widget> _tabs;
+  late UserProfile _user;
+  late List<Widget> _tabs;
+  late MeScreen _meScreen;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _user = widget.user;
+    _meScreen = MeScreen(user: _user);
+    _buildTabs();
+  }
+
+  void _buildTabs() {
     _tabs = [
-      HomeScreen(user: widget.user, onQuickAccessTap: _switchTab),
+      HomeScreen(user: _user, onQuickAccessTap: _switchTab),
       const LearnScreen(),
-      MeScreen(user: widget.user),
+      _meScreen,
     ];
   }
 
+  Future<void> _reloadUserProfile() async {
+    try {
+      final response =
+          await Supabase.instance.client
+              .from('profiles')
+              .select()
+              .eq('id', _user.id)
+              .single();
+
+      if (!mounted) return;
+
+      setState(() {
+        _user.name = (response['name'] ?? '') as String;
+        _user.age = (response['age'] ?? 0) as int;
+        _user.gender = (response['gender'] ?? 'Female') as String;
+        _user.imagePath = response['avatar_url'] as String?;
+        _buildTabs();
+      });
+    } catch (e) {
+      debugPrint('Error reloading user profile: $e');
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _reloadUserProfile();
+    }
+  }
+
   void _switchTab(int index) {
+    if (index == 0) {
+      _reloadUserProfile();
+    } else if (index == 2) {
+      _reloadUserProfile();
+      // Refresh Me screen stats when switching to it
+      _meScreen.refreshStats();
+    }
     setState(() => _currentIndex = index);
   }
 
@@ -152,23 +198,41 @@ class _RootTabsState extends State<RootTabs> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: _tabs),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _currentIndex,
-        selectedItemColor: const Color.fromARGB(255, 56, 54, 180),
-        unselectedItemColor: Colors.grey[600],
-        onTap: _switchTab,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.library_books),
-            label: 'Learn',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 10,
+              offset: const Offset(0, -3),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            currentIndex: _currentIndex,
+            selectedItemColor: const Color.fromARGB(255, 56, 54, 180),
+            unselectedItemColor: Colors.grey[600],
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            onTap: _switchTab,
+            items: const [
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.library_books),
+                label: 'Learn',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.account_circle),
+                label: 'Me',
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Me',
-          ),
-        ],
+        ),
       ),
     );
   }

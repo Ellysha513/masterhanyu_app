@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/user_profile.dart';
 import '../theme/app_background.dart';
@@ -20,6 +21,59 @@ class AccountSettingsScreen extends StatelessWidget {
       MaterialPageRoute(builder: (_) => const LoginScreen()),
       (route) => false,
     );
+  }
+
+  Future<void> _deleteProgress(BuildContext context) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userId = user.id;
+
+      // Delete all keys related to this user's progress
+      final keysToDelete = [
+        'xp_$userId',
+        'today_xp_$userId',
+        'total_minutes_$userId',
+        'today_minutes_$userId',
+        'learn_syllables_progress_$userId',
+        'pinyin_intro_progress_$userId',
+        'last_active_date_$userId',
+      ];
+
+      // Delete all daily stats for the user (7+ days)
+      for (int i = 0; i < 30; i++) {
+        final date = DateTime.now().subtract(Duration(days: i));
+        final dateStr = date.toIso8601String().substring(0, 10);
+        keysToDelete.add('xp_daily_$userId$dateStr');
+        keysToDelete.add('minutes_daily_$userId$dateStr');
+      }
+
+      // Delete all keys from SharedPreferences
+      for (final key in keysToDelete) {
+        await prefs.remove(key);
+      }
+
+      if (!context.mounted) return;
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Progress deleted successfully'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      Navigator.pop(context);
+    } catch (e) {
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error deleting progress: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   void _showLogoutDialog(BuildContext context) {
@@ -151,29 +205,81 @@ class AccountSettingsScreen extends StatelessWidget {
                         onTap: () {
                           showDialog(
                             context: context,
-                            builder:
-                                (_) => AlertDialog(
-                                  title: const Text('Delete Progress'),
-                                  content: const Text(
-                                    'This action cannot be undone. Are you sure?',
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        // To do: delete progress logic
-                                      },
-                                      child: const Text(
-                                        'Delete',
-                                        style: TextStyle(color: Colors.red),
-                                      ),
-                                    ),
-                                  ],
+                            barrierDismissible: true,
+                            builder: (_) {
+                              return Dialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(
+                                        Icons.delete_outline,
+                                        size: 36,
+                                        color: Colors.red,
+                                      ),
+                                      const SizedBox(height: 12),
+                                      const Text(
+                                        'Delete Progress?',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      const Text(
+                                        'This action cannot be undone. All your progress, XP, and time stats will be permanently deleted.',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                      const SizedBox(height: 20),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: OutlinedButton(
+                                              onPressed:
+                                                  () => Navigator.pop(context),
+                                              style: OutlinedButton.styleFrom(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                              ),
+                                              child: const Text('Cancel'),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: ElevatedButton(
+                                              onPressed: () async {
+                                                Navigator.pop(context);
+                                                await _deleteProgress(context);
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.red,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                              ),
+                                              child: const Text(
+                                                'Delete',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
                           );
                         },
                       ),

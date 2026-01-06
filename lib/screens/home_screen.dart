@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_profile.dart';
 import '../widgets/animated_progress.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final UserProfile user;
   final Function(int) onQuickAccessTap;
 
@@ -13,25 +14,54 @@ class HomeScreen extends StatelessWidget {
   });
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int todayXP = 0;
+  int todayMinutes = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTodayStats();
+  }
+
+  Future<void> _loadTodayStats() async {
+    final prefs = await SharedPreferences.getInstance();
+    final id = widget.user.id;
+
+    if (mounted) {
+      setState(() {
+        todayXP = prefs.getInt('today_xp_$id') ?? 0;
+        todayMinutes = prefs.getInt('today_minutes_$id') ?? 0;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F3FF),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 30),
+          padding: const EdgeInsets.only(bottom: 100),
           child: Column(
             children: [
               _header(),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
               _welcomeCard(),
               const SizedBox(height: 20),
+
+              _todayStats(),
+              const SizedBox(height: 24),
 
               _todayFocus(context),
               const SizedBox(height: 20),
 
               _activeCourse(),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
               _learningTip(),
             ],
@@ -102,15 +132,15 @@ class HomeScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Hello, ${user.name.isNotEmpty ? user.name : user.username}!",
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            "Hello, ${widget.user.name.isNotEmpty ? widget.user.name : widget.user.username}!",
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           const Text(
             "Ready to continue your Chinese learning journey?",
-            style: TextStyle(color: Colors.grey),
+            style: TextStyle(color: Colors.grey, fontSize: 14),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
@@ -138,7 +168,135 @@ class HomeScreen extends StatelessWidget {
   }
 
   // ------------------------------------------------------------
-  // TODAY'S FOCUS ⭐ (NEW)
+  // TODAY'S STATS (NEW)
+  // ------------------------------------------------------------
+  Widget _todayStats() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF6C63FF), Color(0xFF8B7FFF)],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF6C63FF).withValues(alpha: 0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(
+                          Icons.emoji_events,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        "Today's XP",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    "$todayXP XP",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFF6B9D), Color(0xFFFF8FB1)],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFFF6B9D).withValues(alpha: 0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(
+                          Icons.schedule,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        "Study Time",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    "$todayMinutes min",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ------------------------------------------------------------
+  // TODAY'S FOCUS ⭐
   // ------------------------------------------------------------
   Widget _todayFocus(BuildContext context) {
     return _card(
@@ -146,11 +304,12 @@ class HomeScreen extends StatelessWidget {
       child: Row(
         children: [
           CircleAvatar(
-            radius: 22,
+            radius: 26,
             backgroundColor: Colors.deepPurple.shade100,
             child: const Icon(
               Icons.record_voice_over,
               color: Colors.deepPurple,
+              size: 26,
             ),
           ),
           const SizedBox(width: 14),
@@ -160,21 +319,29 @@ class HomeScreen extends StatelessWidget {
               children: [
                 Text(
                   "Introduction",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 ),
                 SizedBox(height: 4),
                 Text(
-                  "Practice pronunciation & tones",
-                  style: TextStyle(color: Colors.grey),
+                  "Learn pinyin, syllables & tones",
+                  style: TextStyle(color: Colors.grey, fontSize: 13),
                 ),
               ],
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.play_circle_fill, color: Colors.deepPurple),
-            onPressed: () {
-              onQuickAccessTap(1); // Learn tab
-            },
+          GestureDetector(
+            onTap: () => widget.onQuickAccessTap(1),
+            child: Container(
+              width: 30,
+              height: 30,
+              decoration: const BoxDecoration(
+                color: Color(0xFF5C56D6),
+                shape: BoxShape.circle,
+              ),
+              child: const Center(
+                child: Icon(Icons.play_arrow, color: Colors.white, size: 20),
+              ),
+            ),
           ),
         ],
       ),
@@ -211,28 +378,64 @@ class HomeScreen extends StatelessWidget {
   // LEARNING TIP
   // ------------------------------------------------------------
   Widget _learningTip() {
-    return _card(
-      gradient: const LinearGradient(
-        colors: [Color(0xFFEDE7FF), Color(0xFFF7F4FF)],
-      ),
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.lightbulb, color: Colors.orange),
-              SizedBox(width: 8),
-              Text(
-                "Learning Tip",
-                style: TextStyle(fontWeight: FontWeight.bold),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFFFFA726), Color(0xFFFFB74D)],
+          ),
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFFFFA726).withValues(alpha: 0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(12),
               ),
-            ],
-          ),
-          SizedBox(height: 10),
-          Text(
-            "Practice pronunciation daily for just 5 minutes to improve your speaking skills!",
-          ),
-        ],
+              child: const Icon(
+                Icons.lightbulb_outline,
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
+            const SizedBox(width: 16),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "💡 Pro Tip",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    "Listen first, then repeat. Tones are everything in Chinese!",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

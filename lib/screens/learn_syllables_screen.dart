@@ -130,8 +130,8 @@ class _LearnSyllablesScreenState extends State<LearnSyllablesScreen> {
       totalAnswered++;
       if (ok) {
         correct++;
-        // Award 2XP for first try, 1XP for retry
-        earnedXP += isRetryMode ? 1 : 2;
+        // Award 1 XP per correct answer
+        earnedXP += 1;
       } else {
         retryQueue.add(current);
       }
@@ -220,6 +220,11 @@ class _LearnSyllablesScreenState extends State<LearnSyllablesScreen> {
     final todayXP = prefs.getInt('today_xp_$userId') ?? 0;
     await prefs.setInt('today_xp_$userId', todayXP + earnedXP);
 
+    // Daily XP (for graph)
+    final dailyXPKey = 'xp_daily_$userId$today';
+    final dailyXP = prefs.getInt(dailyXPKey) ?? 0;
+    await prefs.setInt(dailyXPKey, dailyXP + earnedXP);
+
     // Total time
     final totalMin = prefs.getInt('total_minutes_$userId') ?? 0;
     await prefs.setInt('total_minutes_$userId', totalMin + sessionMinutes);
@@ -227,6 +232,11 @@ class _LearnSyllablesScreenState extends State<LearnSyllablesScreen> {
     // Today time
     final todayMin = prefs.getInt('today_minutes_$userId') ?? 0;
     await prefs.setInt('today_minutes_$userId', todayMin + sessionMinutes);
+
+    // Daily minutes (for graph)
+    final dailyMinKey = 'minutes_daily_$userId$today';
+    final dailyMin = prefs.getInt(dailyMinKey) ?? 0;
+    await prefs.setInt(dailyMinKey, dailyMin + sessionMinutes);
 
     debugPrint(
       'DEBUG learn_syllables: Saved - xp_$userId=${totalXP + earnedXP}, today_xp_$userId=${todayXP + earnedXP}',

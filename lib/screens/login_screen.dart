@@ -180,6 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             "Sign In",
                                             style: TextStyle(
                                               color: Colors.white,
+                                              fontSize: 16,
                                             ),
                                           ),
                                 ),
