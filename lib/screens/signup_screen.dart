@@ -70,6 +70,10 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    const primary = Color(0xFF9F8EF1);
+    const headline = Color(0xFF0F172A);
+    const muted = Color(0xFF6B7280);
+
     return Scaffold(
       body: AnimatedBackground(
         child: SafeArea(
@@ -92,12 +96,12 @@ class _SignupScreenState extends State<SignupScreen> {
                           padding: const EdgeInsets.all(26),
                           margin: const EdgeInsets.symmetric(horizontal: 20),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.95),
-                            borderRadius: BorderRadius.circular(26),
+                            color: Colors.white.withValues(alpha:0.95),
+                            borderRadius: BorderRadius.circular(28),
                             boxShadow: [
                               BoxShadow(
                                 blurRadius: 16,
-                                color: Colors.black.withValues(alpha: 0.12),
+                                color: Colors.black.withValues(alpha:0.1),
                                 offset: const Offset(0, 6),
                               ),
                             ],
@@ -105,18 +109,43 @@ class _SignupScreenState extends State<SignupScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: const [
+                                  CircleAvatar(
+                                    radius: 16,
+                                    backgroundColor: primary,
+                                    child: Icon(
+                                      Icons.pets,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    'MasterHanyu',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: headline,
+                                      letterSpacing: 0.3,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
                               const Text(
                                 "Sign Up",
                                 style: TextStyle(
                                   fontSize: 28,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF1A2B3C),
+                                  color: headline,
                                 ),
                               ),
                               const SizedBox(height: 6),
                               const Text(
                                 "Register to start learning Chinese!",
-                                style: TextStyle(color: Color(0xFF6B7280)),
+                                style: TextStyle(color: muted, fontSize: 15),
                               ),
 
                               const SizedBox(height: 25),
@@ -125,18 +154,21 @@ class _SignupScreenState extends State<SignupScreen> {
                                 emailController,
                                 "Email",
                                 Icons.email_outlined,
+                                primary,
                               ),
                               const SizedBox(height: 18),
                               _field(
                                 usernameController,
                                 "Username",
                                 Icons.person_outline,
+                                primary,
                               ),
                               const SizedBox(height: 18),
                               _field(
                                 passwordController,
                                 "Password",
                                 Icons.lock_outline,
+                                primary,
                                 obscure: true,
                               ),
 
@@ -148,9 +180,10 @@ class _SignupScreenState extends State<SignupScreen> {
                                   onPressed:
                                       (!isFormValid || loading) ? null : signup,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF5C56D6),
-                                    disabledBackgroundColor:
-                                        Colors.grey.shade400,
+                                    backgroundColor: primary,
+                                    disabledBackgroundColor: primary
+                                        .withValues(alpha: 0.35),
+                                    foregroundColor: Colors.white,
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 15,
                                     ),
@@ -167,7 +200,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                             "Create Account",
                                             style: TextStyle(
                                               fontSize: 16,
-                                              color: Colors.white,
+                                              fontWeight: FontWeight.w700,
                                             ),
                                           ),
                                 ),
@@ -188,8 +221,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                   child: const Text(
                                     "I'm already registered",
                                     style: TextStyle(
-                                      color: Color(0xFF0A4D68),
-                                      fontWeight: FontWeight.bold,
+                                      color: primary,
+                                      fontWeight: FontWeight.w700,
                                     ),
                                   ),
                                 ),
@@ -212,21 +245,34 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget _field(
     TextEditingController c,
     String hint,
-    IconData icon, {
+    IconData icon,
+    Color accent, {
     bool obscure = false,
   }) {
     return TextField(
       controller: c,
       obscureText: obscure ? _obscurePassword : false,
       decoration: InputDecoration(
-        prefixIcon: Icon(icon),
+        prefixIcon: Icon(icon, color: accent),
         hintText: hint,
+        hintStyle: const TextStyle(
+          color: Color(0xFF94A3B8),
+          fontWeight: FontWeight.w500,
+        ),
         helperText: obscure ? 'Min 6 characters' : null,
         filled: true,
-        fillColor: const Color(0xFFF5F7FA),
+        fillColor: const Color(0xFFF6F9FB),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: accent, width: 1.4),
         ),
         suffixIcon:
             obscure
@@ -239,6 +285,10 @@ class _SignupScreenState extends State<SignupScreen> {
                           setState(() => _obscurePassword = !_obscurePassword),
                 )
                 : null,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 14,
+        ),
       ),
     );
   }

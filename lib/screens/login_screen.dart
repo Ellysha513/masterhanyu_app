@@ -73,6 +73,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    const primary = Color(0xFF9F8EF1);
+    const headline = Color(0xFF0F172A);
+    const muted = Color(0xFF6B7280);
+
     return Scaffold(
       body: AnimatedBackground(
         child: SafeArea(
@@ -93,11 +97,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           margin: const EdgeInsets.symmetric(horizontal: 20),
                           decoration: BoxDecoration(
                             color: Colors.white.withValues(alpha: 0.95),
-                            borderRadius: BorderRadius.circular(26),
+                            borderRadius: BorderRadius.circular(28),
                             boxShadow: [
                               BoxShadow(
                                 blurRadius: 16,
-                                color: Colors.black.withValues(alpha: 0.12),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 offset: const Offset(0, 6),
                               ),
                             ],
@@ -105,18 +109,43 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: const [
+                                  CircleAvatar(
+                                    radius: 16,
+                                    backgroundColor: primary,
+                                    child: Icon(
+                                      Icons.pets,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    'MasterHanyu',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: headline,
+                                      letterSpacing: 0.3,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
                               const Text(
                                 "Login",
                                 style: TextStyle(
                                   fontSize: 28,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF1A2B3C),
+                                  color: headline,
                                 ),
                               ),
                               const SizedBox(height: 6),
                               const Text(
                                 "Sign in to continue learning Chinese!",
-                                style: TextStyle(color: Color(0xFF6B7280)),
+                                style: TextStyle(color: muted, fontSize: 15),
                               ),
 
                               const SizedBox(height: 25),
@@ -126,6 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 decoration: _input(
                                   "Username",
                                   Icons.person_outline,
+                                  primary,
                                 ),
                               ),
 
@@ -137,6 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 decoration: _input(
                                   "Password",
                                   Icons.lock_outline,
+                                  primary,
                                   suffix: IconButton(
                                     icon: Icon(
                                       _obscurePassword
@@ -161,9 +192,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   onPressed:
                                       (!isFormValid || loading) ? null : login,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF5C56D6),
-                                    disabledBackgroundColor:
-                                        Colors.grey.shade400,
+                                    backgroundColor: primary,
+                                    disabledBackgroundColor: primary
+                                        .withValues(alpha: 0.35),
+                                    foregroundColor: Colors.white,
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 15,
                                     ),
@@ -179,8 +211,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                           : const Text(
                                             "Sign In",
                                             style: TextStyle(
-                                              color: Colors.white,
                                               fontSize: 16,
+                                              fontWeight: FontWeight.w700,
                                             ),
                                           ),
                                 ),
@@ -201,8 +233,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: const Text(
                                     "Don't have an account? Sign Up",
                                     style: TextStyle(
-                                      color: Color(0xFF0A4D68),
-                                      fontWeight: FontWeight.bold,
+                                      color: primary,
+                                      fontWeight: FontWeight.w700,
                                     ),
                                   ),
                                 ),
@@ -222,17 +254,35 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  InputDecoration _input(String hint, IconData icon, {Widget? suffix}) {
+  InputDecoration _input(
+    String hint,
+    IconData icon,
+    Color accent, {
+    Widget? suffix,
+  }) {
     return InputDecoration(
-      prefixIcon: Icon(icon),
+      prefixIcon: Icon(icon, color: accent),
       hintText: hint,
+      hintStyle: const TextStyle(
+        color: Color(0xFF94A3B8),
+        fontWeight: FontWeight.w500,
+      ),
       filled: true,
-      fillColor: const Color(0xFFF5F7FA),
+      fillColor: const Color(0xFFF6F9FB),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: accent, width: 1.4),
       ),
       suffixIcon: suffix,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
     );
   }
 }

@@ -27,8 +27,7 @@ class _LearnScreenState extends State<LearnScreen> {
     final intro = prefs.getDouble('pinyin_intro_progress_$userId') ?? 0.0;
     final syllables =
         prefs.getDouble('learn_syllables_progress_$userId') ?? 0.0;
-    final tones =
-        prefs.getDouble('tones_quiz_progress_$userId') ?? 0.0;
+    final tones = prefs.getDouble('tones_quiz_progress_$userId') ?? 0.0;
 
     setState(() {
       // Each sub-lesson contributes 25%; intro + syllables + tones + intro_quiz = 100%
@@ -47,9 +46,16 @@ class _LearnScreenState extends State<LearnScreen> {
     Lesson(
       id: 'greetings',
       title: 'Greetings',
-      description: 'Master basic Chinese greetings for daily conversations',
+      description: 'Learn basic Chinese greetings for daily conversations',
       progress: 0.0,
       imageAsset: 'assets/image/greetings.png',
+    ),
+    Lesson(
+      id: 'name',
+      title: 'Introduce Yourself',
+      description: 'Learn how to introduce yourself in Chinese',
+      progress: 0.0,
+      imageAsset: 'assets/image/name.png',
     ),
   ];
 
