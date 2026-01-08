@@ -153,11 +153,18 @@ class AccountSettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF6F3FF),
       appBar: AppBar(
-        title: const Text('Account Settings'),
-        backgroundColor: Colors.transparent,
+        backgroundColor: const Color.fromARGB(255, 160, 160, 248),
         elevation: 0,
-        foregroundColor: Colors.black,
+        title: const Text(
+          "Account Settings",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: Container(
         decoration: masterHanyuBackground(),

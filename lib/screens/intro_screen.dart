@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'login_screen.dart';
+import 'session_loader.dart';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
@@ -11,7 +11,6 @@ class IntroScreen extends StatefulWidget {
 
 class _IntroScreenState extends State<IntroScreen>
     with SingleTickerProviderStateMixin {
-
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
@@ -33,12 +32,12 @@ class _IntroScreenState extends State<IntroScreen>
 
     _controller.forward();
 
-    // Go to login screen after animation
+    // After intro animation, proceed to session loader which routes to app or login
     Timer(const Duration(milliseconds: 2500), () {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        MaterialPageRoute(builder: (_) => const SessionLoader()),
       );
     });
   }
@@ -56,11 +55,7 @@ class _IntroScreenState extends State<IntroScreen>
       body: Center(
         child: ScaleTransition(
           scale: _scaleAnimation,
-          child: Image.asset(
-            "assets/image/logo1.png",
-            width: 230,
-            height: 230,
-          ),
+          child: Image.asset("assets/image/logo1.png", width: 230, height: 230),
         ),
       ),
     );

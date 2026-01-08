@@ -27,14 +27,14 @@ class _LearnScreenState extends State<LearnScreen> {
     final intro = prefs.getDouble('pinyin_intro_progress_$userId') ?? 0.0;
     final syllables =
         prefs.getDouble('learn_syllables_progress_$userId') ?? 0.0;
+    final tones =
+        prefs.getDouble('tones_quiz_progress_$userId') ?? 0.0;
 
     setState(() {
-      // Each sub-lesson contributes 25%; intro + syllables together = 50%
-      pinyinProgress = (intro + syllables).clamp(0.0, 1.0);
+      // Each sub-lesson contributes 25%; intro + syllables + tones + intro_quiz = 100%
+      pinyinProgress = (intro + syllables + tones).clamp(0.0, 1.0);
     });
   }
-
-  
 
   List<Lesson> get lessons => [
     Lesson(

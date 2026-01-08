@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_profile.dart';
 import '../widgets/animated_progress.dart';
+import '../utils/time_formatter.dart';
 
 class HomeScreen extends StatefulWidget {
   final UserProfile user;
@@ -279,7 +280,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    "$todayMinutes min",
+                    formatMinutes(todayMinutes),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 28,

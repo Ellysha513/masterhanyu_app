@@ -25,9 +25,31 @@ class StatGraphSheet extends StatelessWidget {
     return labels;
   }
 
+  /// Generate dynamic Y-axis labels based on max value in data
+  List<String> _getYAxisLabels() {
+    if (values.isEmpty) return ['0', '10', '20', '30', '40'];
+
+    double maxValue =
+        values.isNotEmpty ? values.reduce((a, b) => a > b ? a : b) : 40;
+    if (maxValue == 0) maxValue = 40;
+
+    // Round up to nearest 50 for clean intervals
+    maxValue = (maxValue * 1.2).ceilToDouble();
+    final step = (maxValue / 4).ceilToDouble();
+
+    return [
+      (maxValue).toInt().toString(),
+      (maxValue - step).toInt().toString(),
+      (maxValue - step * 2).toInt().toString(),
+      (maxValue - step * 3).toInt().toString(),
+      '0',
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final dayLabels = _getDayLabels();
+    final yAxisLabels = _getYAxisLabels();
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
@@ -58,28 +80,18 @@ class StatGraphSheet extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.end,
-                    children: const [
-                      Text(
-                        "40",
-                        style: TextStyle(fontSize: 11, color: Colors.grey),
-                      ),
-                      Text(
-                        "30",
-                        style: TextStyle(fontSize: 11, color: Colors.grey),
-                      ),
-                      Text(
-                        "20",
-                        style: TextStyle(fontSize: 11, color: Colors.grey),
-                      ),
-                      Text(
-                        "10",
-                        style: TextStyle(fontSize: 11, color: Colors.grey),
-                      ),
-                      Text(
-                        "0",
-                        style: TextStyle(fontSize: 11, color: Colors.grey),
-                      ),
-                    ],
+                    children:
+                        yAxisLabels
+                            .map(
+                              (label) => Text(
+                                label,
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            )
+                            .toList(),
                   ),
                 ),
                 const SizedBox(width: 12),

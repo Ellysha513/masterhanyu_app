@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'models/user_profile.dart';
 import 'services/profile_service.dart';
@@ -19,25 +18,20 @@ Future<void> main() async {
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmdmF2dm1kdGhrbWl4a3dmb3NhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyMDUyNTUsImV4cCI6MjA4MDc4MTI1NX0.3jTiFio_b9BcwbpNG4kySW85z8KJIwR1iSJjAw1EoZ8',
   );
 
-  final prefs = await SharedPreferences.getInstance();
-  final hasSeenIntro = prefs.getBool('hasSeenIntro') ?? false;
-
-  runApp(MyApp(hasSeenIntro: hasSeenIntro));
+  runApp(const MyApp());
 }
 
 // ------------------------------------------------------------
 // APP ROOT
 // ------------------------------------------------------------
 class MyApp extends StatelessWidget {
-  final bool hasSeenIntro;
-
-  const MyApp({super.key, required this.hasSeenIntro});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: !hasSeenIntro ? const SessionLoader() : const IntroScreen(),
+      home: const IntroScreen(),
     );
   }
 }

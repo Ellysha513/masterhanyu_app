@@ -59,6 +59,7 @@ class _LearnSyllablesScreenState extends State<LearnSyllablesScreen> {
 
   late List<String> quizQueue;
   final List<String> retryQueue = [];
+  late List<List<String>> allOptions; // Store options for each question
 
   int index = 0;
   int correct = 0;
@@ -75,6 +76,8 @@ class _LearnSyllablesScreenState extends State<LearnSyllablesScreen> {
     super.initState();
     quizQueue =
         (List.from(allSyllables)..shuffle()).take(15).toList().cast<String>();
+    // Generate options for all questions upfront
+    allOptions = quizQueue.map((syllable) => _options(syllable)).toList();
     earnedXP = 0; // Reset earned XP for this session
     isRetryMode = false; // Reset retry mode
     _stopwatch.start();
@@ -91,18 +94,23 @@ class _LearnSyllablesScreenState extends State<LearnSyllablesScreen> {
     await _syllablePlayer.setReleaseMode(ReleaseMode.stop);
     await _syllablePlayer.play(
       AssetSource('audio/syllable/$s.mp3'),
-      volume: 1.0,
+      volume: 2.0,
     );
   }
 
   Future<void> _playCorrect() async {
     await _sfxPlayer.stop();
-    await _sfxPlayer.play(AssetSource('audio/correct.mp3'), volume: 1.0);
+    await _sfxPlayer.play(AssetSource('audio/correct.mp3'), volume: 2.0);
   }
 
   Future<void> _playWrong() async {
     await _sfxPlayer.stop();
-    await _sfxPlayer.play(AssetSource('audio/wrong.mp3'), volume: 1.0);
+    await _sfxPlayer.play(AssetSource('audio/wrong.mp3'), volume: 2.0);
+  }
+
+  Future<void> _playFinish() async {
+    await _sfxPlayer.stop();
+    await _sfxPlayer.play(AssetSource('audio/finish.mp3'), volume: 2.0);
   }
 
   @override
@@ -151,6 +159,8 @@ class _LearnSyllablesScreenState extends State<LearnSyllablesScreen> {
     } else if (retryQueue.isNotEmpty) {
       quizQueue = List.from(retryQueue);
       retryQueue.clear();
+      // Regenerate options for retry questions
+      allOptions = quizQueue.map((syllable) => _options(syllable)).toList();
       index = 0;
       showResult = false;
       selected = '';
@@ -170,6 +180,10 @@ class _LearnSyllablesScreenState extends State<LearnSyllablesScreen> {
           sessionMinutes: sessionMinutes,
         );
       }
+
+      if (!mounted) return;
+
+      await _playFinish();
 
       if (!mounted) return;
 
@@ -254,23 +268,28 @@ class _LearnSyllablesScreenState extends State<LearnSyllablesScreen> {
   @override
   Widget build(BuildContext context) {
     final syllable = quizQueue[index];
-    final options = _options(syllable);
+    final options = allOptions[index]; // Use pre-generated options
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF7FB),
+      backgroundColor: const Color(0xFFF6F3FF),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: const Color.fromARGB(255, 160, 160, 248),
         elevation: 0,
+        title: const Text(
+          "Learn Syllables",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
+          icon: const Icon(Icons.close, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
+
       body: Column(
         children: [
           LinearProgressIndicator(
             value: (index + 1) / quizQueue.length,
-            color: Colors.deepPurple,
+            color: const Color.fromARGB(255, 237, 25, 194),
             backgroundColor: Colors.deepPurple.shade100,
           ),
           const SizedBox(height: 40),
@@ -300,18 +319,34 @@ class _LearnSyllablesScreenState extends State<LearnSyllablesScreen> {
               itemCount: options.length,
               itemBuilder: (_, i) {
                 final opt = options[i];
-                final selectedBorder =
-                    selected == opt
-                        ? (isCorrect ? Colors.green : Colors.red)
-                        : Colors.grey.shade300;
+                final bool isSelected = selected == opt;
+                // Border color rules
+                final Color borderColor =
+                    showResult
+                        ? (isSelected
+                            ? (isCorrect ? Colors.green : Colors.red)
+                            : Colors.grey.shade300)
+                        : (isSelected
+                            ? const Color(0xFF22C1A0)
+                            : Colors.grey.shade300);
+                // Background color rules (subtle tint when selected before checking)
+                final Color bgColor =
+                    showResult
+                        ? Colors.white
+                        : (isSelected ? const Color(0xFFE8FBF6) : Colors.white);
 
                 return GestureDetector(
-                  onTap: showResult ? null : () => answer(opt),
+                  onTap:
+                      showResult
+                          ? null
+                          : () => setState(() {
+                            selected = opt;
+                          }),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: bgColor,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: selectedBorder, width: 2),
+                      border: Border.all(color: borderColor, width: 2),
                     ),
                     child: Center(
                       child: Text(
@@ -328,43 +363,75 @@ class _LearnSyllablesScreenState extends State<LearnSyllablesScreen> {
             ),
           ),
           if (showResult) _resultBar(syllable),
+
+          // Bottom action button: CHECK (before) -> CONTINUE (after)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed:
+                    showResult
+                        ? next
+                        : (selected.isNotEmpty ? () => answer(selected) : null),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      showResult
+                          ? (isCorrect
+                              ? const Color(0xFF22C1A0)
+                              : const Color(0xFFDA3A3A))
+                          : (selected.isNotEmpty
+                              ? const Color(0xFF22C1A0)
+                              : Colors.grey[300]),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                ),
+                child: Text(showResult ? 'CONTINUE' : 'CHECK'),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _resultBar(String answer) {
+    final Color panelColor =
+        isCorrect ? const Color(0xFFD6F5EE) : const Color(0xFFFCE2E2);
+    final Color titleColor =
+        isCorrect ? const Color(0xFF0BB28C) : const Color(0xFFDA3A3A);
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      color: isCorrect ? const Color(0xFFDFF5E6) : const Color(0xFFFFDADA),
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+      decoration: BoxDecoration(
+        color: panelColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             isCorrect ? 'You are correct!' : 'Correct solution:',
             style: TextStyle(
-              color: isCorrect ? Colors.green : Colors.red,
-              fontSize: 16,
+              color: titleColor,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 6),
-          Text(
-            answer,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
-          ElevatedButton(
-            onPressed: next,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isCorrect ? Colors.green : Colors.red,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
+          const SizedBox(height: 8),
+          Center(
+            child: Text(
+              answer,
+              style: const TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w700,
+                color: Colors.black87,
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 14),
-            ),
-            child: const Text(
-              'CONTINUE',
-              style: TextStyle(color: Colors.white),
             ),
           ),
         ],

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:masterhanyu_app/screens/tones_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'pinyin_introduction_screen.dart';
 import 'learn_syllables_screen.dart';
+//import 'tones_quiz_screen.dart';
 
 class PinyinMenuScreen extends StatefulWidget {
   const PinyinMenuScreen({super.key});
@@ -26,9 +28,10 @@ class _PinyinMenuScreenState extends State<PinyinMenuScreen> {
     final intro = prefs.getDouble('pinyin_intro_progress_$userId') ?? 0.0;
     final syllables =
         prefs.getDouble('learn_syllables_progress_$userId') ?? 0.0;
+    final tones = prefs.getDouble('tones_quiz_progress_$userId') ?? 0.0;
 
     setState(() {
-      progress = intro + syllables;
+      progress = (intro + syllables + tones).clamp(0.0, 1.0);
     });
   }
 
@@ -37,11 +40,18 @@ class _PinyinMenuScreenState extends State<PinyinMenuScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F3FF),
       appBar: AppBar(
-        title: const Text('Introduction'),
-        backgroundColor: Colors.transparent,
+        backgroundColor: const Color.fromARGB(255, 160, 160, 248),
         elevation: 0,
-        foregroundColor: Colors.black,
+        title: const Text(
+          "Introduction",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.close, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -51,7 +61,7 @@ class _PinyinMenuScreenState extends State<PinyinMenuScreen> {
             const SizedBox(height: 24),
             _lessonTile(
               icon: Icons.lightbulb,
-              color: const Color.fromARGB(255, 101, 101, 230),
+              color: const Color.fromARGB(255, 63, 63, 231),
               title: 'Pinyin Introduction',
               subtitle: 'What is Pinyin, initials & finals',
               onTap: () async {
@@ -82,7 +92,13 @@ class _PinyinMenuScreenState extends State<PinyinMenuScreen> {
               color: const Color.fromARGB(255, 102, 248, 89),
               title: 'Tones',
               subtitle: 'Master the 4 Chinese tones',
-              onTap: () {},
+              onTap: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const TonesScreen()),
+                );
+                _loadProgress(); // 🔁 refresh after return
+              },
             ),
             _lessonTile(
               icon: Icons.question_answer,

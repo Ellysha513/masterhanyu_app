@@ -68,9 +68,13 @@ flutter:
     - assets/video/cat_typing.mp4
     - assets/image/pinyin.png
     - assets/image/greetings.png
-    - assets/image/finish.png
-    - assets/image/syllable_ba.png
-    - assets/image/ba.png
+    - assets/image/finish1.png
+    - assets/image/syllable_ba1.png
+    - assets/image/ba1.png
+    - assets/image/1st_tone.png
+    - assets/image/2nd_tone.png
+    - assets/image/3rd_tone.png
+    - assets/image/4th_tone.png
 
   # audio syllable #
     - assets/audio/syllable/ba.mp3
@@ -171,6 +175,45 @@ flutter:
     - assets/audio/final/üe.mp3
     - assets/audio/final/ün.mp3
   
+ # audio tones #
+    - assets/audio/tones/1st_ā.mp3
+    - assets/audio/tones/2nd_á.mp3
+    - assets/audio/tones/3rd_ǎ.mp3
+    - assets/audio/tones/4th_à.mp3
+    - assets/audio/tones/a.mp3
+    - assets/audio/tones/1st_duō.mp3
+    - assets/audio/tones/1st_zī.mp3
+    - assets/audio/tones/2nd_ú.mp3
+    - assets/audio/tones/3rd_fǎ.mp3
+    - assets/audio/tones/3rd_ǐ.mp3
+    - assets/audio/tones/4th_gù.mp3
+    - assets/audio/tones/4th_wò.mp3
+    - assets/audio/tones/4th_xiè.mp3
+
+ # audio intro_quiz #
+    - assets/audio/intro_quiz/1st_bēn.mp3
+    - assets/audio/intro_quiz/1st_cūn.mp3
+    - assets/audio/intro_quiz/1st_huān.mp3
+    - assets/audio/intro_quiz/1st_xiāng.mp3
+    - assets/audio/intro_quiz/1st_xūn.mp3
+    - assets/audio/intro_quiz/1st_zhuāng.mp3
+    - assets/audio/intro_quiz/2nd_chóu.mp3
+    - assets/audio/intro_quiz/2nd_qié.mp3
+    - assets/audio/intro_quiz/2nd_shá.mp3
+    - assets/audio/intro_quiz/2nd_shén.mp3
+    - assets/audio/intro_quiz/2nd_sóng.mp3
+    - assets/audio/intro_quiz/2nd_xióng.mp3
+    - assets/audio/intro_quiz/2nd_zhuó.mp3
+    - assets/audio/intro_quiz/3rd_fǎng.mp3
+    - assets/audio/intro_quiz/3rd_liǎng.mp3
+    - assets/audio/intro_quiz/3rd_qǐng.mp3
+    - assets/audio/intro_quiz/3rd_wǒ.mp3
+    - assets/audio/intro_quiz/4th_gùn.mp3
+    - assets/audio/intro_quiz/4th_lèi.mp3
+    - assets/audio/intro_quiz/4th_què.mp3
+    - assets/audio/intro_quiz/4th_ruì.mp3
+    - assets/audio/intro_quiz/4th_zuì.mp3
+    
   # audio #
     - assets/audio/finish.mp3
     - assets/audio/correct.mp3

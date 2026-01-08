@@ -67,22 +67,26 @@ class _PinyinIntroScreenState extends State<PinyinIntroScreen> {
     final isLast = currentPage == pages.length - 1;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF6F3FF),
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 180, 180, 248),
+        elevation: 0,
+        title: const Text(
+          "Pinyin Introduction",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.close),
+          icon: const Icon(Icons.close, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Pinyin Introduction'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        foregroundColor: Colors.black,
       ),
+
       body: Column(
         children: [
           Expanded(
             child: PageView(
               controller: _controller,
+              physics: const NeverScrollableScrollPhysics(),
               onPageChanged: (i) => setState(() => currentPage = i),
               children: pages,
             ),
@@ -98,37 +102,54 @@ class _PinyinIntroScreenState extends State<PinyinIntroScreen> {
   // ------------------------------------------------------------
   Widget _navigationBar(bool isLast) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: currentPage == 0 ? null : back,
-          ),
-          const Spacer(),
           ElevatedButton(
-            onPressed: () async {
-              if (isLast) {
+            onPressed: currentPage > 0 ? back : null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF5C56D6),
+              disabledBackgroundColor: Colors.grey[300],
+              shape: const CircleBorder(),
+              padding: const EdgeInsets.all(12),
+            ),
+            child: const Icon(Icons.arrow_back, color: Colors.white),
+          ),
+          if (isLast)
+            ElevatedButton(
+              onPressed: () async {
                 final prefs = await SharedPreferences.getInstance();
                 final userId = Supabase.instance.client.auth.currentUser!.id;
                 await prefs.setDouble('pinyin_intro_progress_$userId', 0.25);
 
                 if (!mounted) return;
                 Navigator.pop(context);
-              } else {
-                next();
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromARGB(255, 204, 134, 231),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF5C56D6),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 14,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
+              child: const Text('CONTINUE'),
+            )
+          else
+            ElevatedButton(
+              onPressed: currentPage < pages.length - 1 ? next : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF5C56D6),
+                disabledBackgroundColor: Colors.grey[300],
+                shape: const CircleBorder(),
+                padding: const EdgeInsets.all(12),
+              ),
+              child: const Icon(Icons.arrow_forward, color: Colors.white),
             ),
-            child: Text(isLast ? 'CONTINUE' : 'NEXT'),
-          ),
         ],
       ),
     );
@@ -185,7 +206,7 @@ class _PinyinIntroScreenState extends State<PinyinIntroScreen> {
               ),
             ),
             const SizedBox(height: 50),
-            Image.asset('assets/image/syllable_ba.png', width: 600),
+            Image.asset('assets/image/syllable_ba1.png', width: 600),
             const SizedBox(height: 50),
             Text.rich(
               TextSpan(
@@ -250,7 +271,7 @@ class _PinyinIntroScreenState extends State<PinyinIntroScreen> {
                 onPressed: () => playAudio('audio/syllable/ba.mp3'),
               ),
               const SizedBox(width: 12),
-              Image.asset('assets/image/ba.png', height: 60),
+              Image.asset('assets/image/ba1.png', height: 60),
             ],
           ),
           const SizedBox(height: 40),
@@ -656,11 +677,7 @@ class _PinyinIntroScreenState extends State<PinyinIntroScreen> {
         child: Center(
           child: Text(
             letter,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
+            style: const TextStyle(fontSize: 20, color: Colors.black),
           ),
         ),
       ),
@@ -743,7 +760,7 @@ class _FinishScreenWithAudioState extends State<_FinishScreenWithAudio> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Image.asset('assets/image/finish.png', width: 300),
+        Image.asset('assets/image/finish1.png', width: 300),
         const SizedBox(height: 40),
         const Text(
           'Congratulations!\nYou get what Pinyin is.',

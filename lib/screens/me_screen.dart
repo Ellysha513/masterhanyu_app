@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../models/user_profile.dart';
 import '../theme/app_background.dart';
 import '../widgets/stat_graph_sheet.dart';
+import '../utils/time_formatter.dart';
 import 'account_settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -352,7 +353,7 @@ class _MeScreenState extends State<MeScreen> with WidgetsBindingObserver {
             children: [
               Expanded(
                 child: StatCard(
-                  title: "$totalMinutes min",
+                  title: formatMinutes(totalMinutes),
                   subtitle: "Total time",
                 ),
               ),
@@ -360,7 +361,7 @@ class _MeScreenState extends State<MeScreen> with WidgetsBindingObserver {
               const SizedBox(width: 12),
               Expanded(
                 child: StatCard(
-                  title: "$todayMinutes min",
+                  title: formatMinutes(todayMinutes),
                   subtitle: "Today's time",
                   isClickable: true,
                 ),
