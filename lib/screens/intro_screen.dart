@@ -55,7 +55,7 @@ class _IntroScreenState extends State<IntroScreen>
       body: Center(
         child: ScaleTransition(
           scale: _scaleAnimation,
-          child: Image.asset("assets/image/logo1.png", width: 230, height: 230),
+          child: Image.asset("assets/image/logo.png", width: 300, height: 300),
         ),
       ),
     );

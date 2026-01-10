@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'pinyin_introduction_screen.dart';
 import 'learn_syllables_screen.dart';
-//import 'tones_quiz_screen.dart';
 
 class PinyinMenuScreen extends StatefulWidget {
   const PinyinMenuScreen({super.key});
