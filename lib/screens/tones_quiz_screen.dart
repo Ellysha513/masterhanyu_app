@@ -268,6 +268,19 @@ class _TonesQuizScreenState extends State<TonesQuizScreen> {
 
     await _saveProgress(earnedXp, minutes);
 
+    // Track high-accuracy completion for badges
+    if (accuracy >= 90) {
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final userId = Supabase.instance.client.auth.currentUser?.id;
+        if (userId != null) {
+          final key = 'tones_quiz_high_accuracy_count_$userId';
+          final count = prefs.getInt(key) ?? 0;
+          await prefs.setInt(key, count + 1);
+        }
+      } catch (_) {}
+    }
+
     if (!mounted) return;
 
     showDialog(

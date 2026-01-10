@@ -18,19 +18,55 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int todayXP = 0;
   int todayMinutes = 0;
+  double pinyinProgress = 0.0;
+  String _focusTitle = "Introduction";
+  String _focusSubtitle = "Learn pinyin, syllables & tones";
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadTodayStats();
+    _loadLearnStatus();
+    _isInitialized = true;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Refresh data when returning to this screen
+    if (_isInitialized) {
+      _loadTodayStats();
+      _loadLearnStatus();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.user.id != widget.user.id) {
+      _loadTodayStats();
+      _loadLearnStatus();
+    }
   }
 
   Future<void> _loadTodayStats() async {
     final prefs = await SharedPreferences.getInstance();
     final id = widget.user.id;
+
+    // Reset daily stats if it's a new day
+    final today = DateTime.now().toIso8601String().substring(0, 10);
+    final lastDateKey = 'last_active_date_$id';
+    final lastDate = prefs.getString(lastDateKey);
+    if (lastDate != today) {
+      await prefs.setInt('today_xp_$id', 0);
+      await prefs.setInt('today_minutes_$id', 0);
+      await prefs.setString(lastDateKey, today);
+    }
 
     if (mounted) {
       setState(() {
@@ -38,6 +74,54 @@ class _HomeScreenState extends State<HomeScreen> {
         todayMinutes = prefs.getInt('today_minutes_$id') ?? 0;
       });
     }
+  }
+
+  Future<void> _loadLearnStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final id = widget.user.id;
+
+    final intro = prefs.getDouble('pinyin_intro_progress_$id') ?? 0.0;
+    final syllables = prefs.getDouble('learn_syllables_progress_$id') ?? 0.0;
+    final tones = prefs.getDouble('tones_quiz_progress_$id') ?? 0.0;
+
+    final total = (intro + syllables + tones).clamp(0.0, 1.0);
+
+    String focusTitle;
+    String focusSubtitle;
+    if (intro < 0.25) {
+      focusTitle = 'Introduction';
+      focusSubtitle = 'Start with Pinyin basics';
+    } else if (syllables < 0.25) {
+      focusTitle = 'Syllables';
+      focusSubtitle = 'Practice initials and finals';
+    } else if (tones < 0.25) {
+      focusTitle = 'Tones Quiz';
+      focusSubtitle = 'Master the four tones';
+    } else {
+      focusTitle = 'Review';
+      focusSubtitle = "You're all caught up!";
+    }
+
+    if (!mounted) return;
+    setState(() {
+      pinyinProgress = total;
+      _focusTitle = focusTitle;
+      _focusSubtitle = focusSubtitle;
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _loadTodayStats();
+      _loadLearnStatus();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -314,18 +398,21 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(width: 14),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Introduction",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  _focusTitle,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
-                  "Learn pinyin, syllables & tones",
-                  style: TextStyle(color: Colors.grey, fontSize: 13),
+                  _focusSubtitle,
+                  style: const TextStyle(color: Colors.grey, fontSize: 13),
                 ),
               ],
             ),
@@ -357,18 +444,21 @@ class _HomeScreenState extends State<HomeScreen> {
       title: "Active Lesson",
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Text(
+        children: [
+          const Text(
             "Introduction to Chinese",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 4),
-          Text("6 / 12 lessons", style: TextStyle(color: Colors.grey)),
-          SizedBox(height: 10),
+          const SizedBox(height: 4),
+          Text(
+            "${(pinyinProgress * 100).round()}% complete",
+            style: const TextStyle(color: Colors.grey),
+          ),
+          const SizedBox(height: 10),
           AnimatedProgressBar(
-            value: 0.5,
+            value: pinyinProgress,
             height: 6,
-            activeColor: Color.fromARGB(255, 248, 151, 240),
+            activeColor: const Color.fromARGB(255, 248, 151, 240),
           ),
         ],
       ),

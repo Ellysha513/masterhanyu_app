@@ -77,6 +77,14 @@ flutter:
     - assets/image/4th_tone.png
     - assets/image/friends.png
     - assets/image/name.png
+    - assets/image/lvl1_lesson.png
+    - assets/image/lvl2_lesson.png
+    - assets/image/lvl1_time.png
+    - assets/image/lvl2_time.png
+    - assets/image/lvl1_quiz.png
+    - assets/image/lvl2_quiz.png
+
+
 
   # audio syllable #
     - assets/audio/syllable/ba.mp3

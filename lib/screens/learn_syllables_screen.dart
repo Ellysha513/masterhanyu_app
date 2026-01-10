@@ -187,6 +187,23 @@ class _LearnSyllablesScreenState extends State<LearnSyllablesScreen> {
 
       if (!mounted) return;
 
+      final accuracy = ((correct / totalAnswered) * 100).round();
+
+      // Track high-accuracy completion for badges
+      if (accuracy >= 90) {
+        try {
+          final prefs = await SharedPreferences.getInstance();
+          final userId = Supabase.instance.client.auth.currentUser?.id;
+          if (userId != null) {
+            final key = 'learn_syllables_high_accuracy_count_$userId';
+            final count = prefs.getInt(key) ?? 0;
+            await prefs.setInt(key, count + 1);
+          }
+        } catch (_) {}
+      }
+
+      if (!mounted) return;
+
       // Show completion dialog
       await showDialog(
         context: context,
@@ -194,7 +211,7 @@ class _LearnSyllablesScreenState extends State<LearnSyllablesScreen> {
         builder:
             (context) => _CompletionDialog(
               xp: earnedXP,
-              accuracy: ((correct / totalAnswered) * 100).round(),
+              accuracy: accuracy,
               timeSpent: _stopwatch.elapsed,
             ),
       );

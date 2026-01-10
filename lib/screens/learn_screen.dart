@@ -29,9 +29,20 @@ class _LearnScreenState extends State<LearnScreen> {
         prefs.getDouble('learn_syllables_progress_$userId') ?? 0.0;
     final tones = prefs.getDouble('tones_quiz_progress_$userId') ?? 0.0;
 
+    final total = (intro + syllables + tones).clamp(0.0, 1.0);
+
+    // Check if lesson was just completed (progress reached 100%)
+    if (total >= 1.0 && pinyinProgress < 1.0) {
+      try {
+        final key = 'lessons_completed_$userId';
+        final count = prefs.getInt(key) ?? 0;
+        await prefs.setInt(key, count + 1);
+      } catch (_) {}
+    }
+
     setState(() {
       // Each sub-lesson contributes 25%; intro + syllables + tones + intro_quiz = 100%
-      pinyinProgress = (intro + syllables + tones).clamp(0.0, 1.0);
+      pinyinProgress = total;
     });
   }
 
