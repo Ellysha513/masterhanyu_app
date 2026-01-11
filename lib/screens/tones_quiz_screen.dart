@@ -262,7 +262,7 @@ class _TonesQuizScreenState extends State<TonesQuizScreen> {
     final elapsed = DateTime.now().difference(_start);
     final elapsedSeconds = elapsed.inSeconds;
     final minutes = (elapsedSeconds / 60).ceil();
-    final earnedXp = _correct;
+    final earnedXp = totalQuestions; // 1 XP per question
     final attempts = _correct + _wrongAttempts;
     final accuracy = attempts == 0 ? 0 : ((_correct / attempts) * 100).round();
 

@@ -468,7 +468,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            "Introduction to Chinese",
+            "Pinyin Introduction",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),

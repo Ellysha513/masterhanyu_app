@@ -390,7 +390,7 @@ class _IntroductionQuizScreenState extends State<IntroductionQuizScreen> {
     final elapsed = DateTime.now().difference(_start);
     final elapsedSeconds = elapsed.inSeconds;
     final minutes = (elapsedSeconds / 60).ceil();
-    final earnedXp = _correct;
+    final earnedXp = totalQuestions; // 1 XP per question
     final accuracy =
         _phase1Correct == 0
             ? 0
