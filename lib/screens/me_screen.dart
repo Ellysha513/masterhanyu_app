@@ -32,6 +32,8 @@ class _MeScreenState extends State<MeScreen> with WidgetsBindingObserver {
   int todayMinutes = 0;
   UserProfile? _userOverride;
   UserProfile get user => _userOverride ?? widget.user;
+  bool _refreshScheduled = false;
+  bool _needsRefresh = false;
 
   Future<void> _loadStats() async {
     if (!mounted) return;
@@ -130,6 +132,7 @@ class _MeScreenState extends State<MeScreen> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _loadStats();
+    _needsRefresh = false;
   }
 
   @override
@@ -138,9 +141,8 @@ class _MeScreenState extends State<MeScreen> with WidgetsBindingObserver {
     // Reload stats whenever the widget's dependencies change
     // This helps when switching between tabs
     // Use addPostFrameCallback to ensure timing is correct after screen transition
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadStats();
-    });
+    _needsRefresh = true;
+    _scheduleRefresh();
   }
 
   @override
@@ -150,9 +152,17 @@ class _MeScreenState extends State<MeScreen> with WidgetsBindingObserver {
   }
 
   @override
+  void activate() {
+    super.activate();
+    _needsRefresh = true;
+    _scheduleRefresh();
+  }
+
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      _loadStats();
+      _needsRefresh = true;
+      _scheduleRefresh();
     }
   }
 
@@ -160,8 +170,19 @@ class _MeScreenState extends State<MeScreen> with WidgetsBindingObserver {
     _loadStats();
   }
 
+  void _scheduleRefresh() {
+    if (_refreshScheduled || !_needsRefresh) return;
+    _refreshScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _refreshScheduled = false;
+      _needsRefresh = false;
+      await _loadStats();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    _scheduleRefresh();
     return Scaffold(
       body: Container(
         decoration: masterHanyuBackground(),
@@ -463,14 +484,14 @@ class _MeScreenState extends State<MeScreen> with WidgetsBindingObserver {
     return {
       'lvl1_lesson': lessonsCompleted >= 1,
       'lvl2_lesson': lessonsCompleted >= 3,
-      'lvl1_quiz': quizHighAccuracy >= 3,
-      'lvl2_quiz': quizHighAccuracy >= 5,
+      'lvl1_quiz': quizHighAccuracy >= 5,
+      'lvl2_quiz': quizHighAccuracy >= 10,
       'lvl1_time': totalMinutes >= 30,
       'lvl2_time': totalMinutes >= 60,
       'lesson_progress': '${lessonsCompleted.clamp(0, 1)}/1 lesson',
       'lesson_progress2': '${lessonsCompleted.clamp(0, 3)}/3 lessons',
-      'quiz_progress': '${quizHighAccuracy.clamp(0, 3)}/3 high scores',
-      'quiz_progress2': '${quizHighAccuracy.clamp(0, 5)}/5 high scores',
+      'quiz_progress': '${quizHighAccuracy.clamp(0, 5)}/5 high scores',
+      'quiz_progress2': '${quizHighAccuracy.clamp(0, 10)}/10 high scores',
       'time_progress': '${totalMinutes.clamp(0, 30)}/30 mins',
       'time_progress2': '${totalMinutes.clamp(0, 60)}/60 mins',
     };

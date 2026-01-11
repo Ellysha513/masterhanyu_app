@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'pinyin_introduction_screen.dart';
 import 'learn_syllables_screen.dart';
+import 'introduction_quiz_screen.dart';
 
 class PinyinMenuScreen extends StatefulWidget {
   const PinyinMenuScreen({super.key});
@@ -28,9 +29,10 @@ class _PinyinMenuScreenState extends State<PinyinMenuScreen> {
     final syllables =
         prefs.getDouble('learn_syllables_progress_$userId') ?? 0.0;
     final tones = prefs.getDouble('tones_quiz_progress_$userId') ?? 0.0;
+    final quiz = prefs.getDouble('introduction_quiz_progress_$userId') ?? 0.0;  
 
     setState(() {
-      progress = (intro + syllables + tones).clamp(0.0, 1.0);
+      progress = (intro + syllables + tones + quiz).clamp(0.0, 1.0);
     });
   }
 
@@ -42,7 +44,7 @@ class _PinyinMenuScreenState extends State<PinyinMenuScreen> {
         backgroundColor: const Color.fromARGB(255, 160, 160, 248),
         elevation: 0,
         title: const Text(
-          "Introduction",
+          "Pinyin Lessons",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
@@ -104,7 +106,13 @@ class _PinyinMenuScreenState extends State<PinyinMenuScreen> {
               color: const Color.fromARGB(255, 53, 195, 243),
               title: 'Quiz',
               subtitle: 'Test your Pinyin knowledge',
-              onTap: () {},
+              onTap: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const IntroductionQuizScreen()),
+                );
+                _loadProgress(); // 🔁 refresh after return
+              },
             ),
           ],
         ),

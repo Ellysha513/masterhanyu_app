@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_profile.dart';
 import '../theme/app_background.dart';
 import 'profile_info_screen.dart';
-import 'login_screen.dart';
+import 'intro_screen.dart';
 
 class AccountSettingsScreen extends StatelessWidget {
   final UserProfile user;
@@ -18,7 +18,7 @@ class AccountSettingsScreen extends StatelessWidget {
     if (!context.mounted) return;
 
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      MaterialPageRoute(builder: (_) => const IntroScreen()),
       (route) => false,
     );
   }
@@ -36,10 +36,18 @@ class AccountSettingsScreen extends StatelessWidget {
         'today_minutes_$userId',
         'learn_syllables_progress_$userId',
         'pinyin_intro_progress_$userId',
+        'tones_quiz_progress_$userId',
+        'introduction_quiz_progress_$userId',
         'last_active_date_$userId',
+        // Badge tracking keys
+        'lessons_completed_$userId',
+        'tones_quiz_high_accuracy_count_$userId',
+        'learn_syllables_high_accuracy_count_$userId',
+        // Lesson completion dialog flag (allows dialog to show again on next completion)
+        'has_shown_completion_dialog_$userId',
       ];
 
-      // Delete all daily stats for the user (7+ days)
+      // Delete all daily stats for the user (30 days)
       for (int i = 0; i < 30; i++) {
         final date = DateTime.now().subtract(Duration(days: i));
         final dateStr = date.toIso8601String().substring(0, 10);

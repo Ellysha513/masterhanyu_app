@@ -25,6 +25,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   String _focusTitle = "Introduction";
   String _focusSubtitle = "Learn pinyin, syllables & tones";
   bool _isInitialized = false;
+  bool _refreshScheduled = false;
+  bool _needsRefresh = false;
 
   @override
   void initState() {
@@ -33,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     _loadTodayStats();
     _loadLearnStatus();
     _isInitialized = true;
+    _needsRefresh = false;
   }
 
   @override
@@ -40,8 +43,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.didChangeDependencies();
     // Refresh data when returning to this screen
     if (_isInitialized) {
-      _loadTodayStats();
-      _loadLearnStatus();
+      _needsRefresh = true;
+      _scheduleRefresh();
     }
   }
 
@@ -49,8 +52,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void didUpdateWidget(covariant HomeScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.user.id != widget.user.id) {
-      _loadTodayStats();
-      _loadLearnStatus();
+      _needsRefresh = true;
+      _scheduleRefresh();
     }
   }
 
@@ -83,8 +86,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final intro = prefs.getDouble('pinyin_intro_progress_$id') ?? 0.0;
     final syllables = prefs.getDouble('learn_syllables_progress_$id') ?? 0.0;
     final tones = prefs.getDouble('tones_quiz_progress_$id') ?? 0.0;
+    final introQuiz = prefs.getDouble('introduction_quiz_progress_$id') ?? 0.0;
 
-    final total = (intro + syllables + tones).clamp(0.0, 1.0);
+    final total = ((intro + syllables + tones + introQuiz) / 4).clamp(0.0, 1.0);
 
     String focusTitle;
     String focusSubtitle;
@@ -113,8 +117,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      _loadTodayStats();
-      _loadLearnStatus();
+      _needsRefresh = true;
+      _scheduleRefresh();
     }
   }
 
@@ -125,7 +129,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   @override
+  void activate() {
+    super.activate();
+    _needsRefresh = true;
+    _scheduleRefresh();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    _scheduleRefresh();
     return Scaffold(
       backgroundColor: const Color(0xFFF6F3FF),
       body: SafeArea(
@@ -154,6 +166,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         ),
       ),
     );
+  }
+
+  void _scheduleRefresh() {
+    if (_refreshScheduled || !_needsRefresh) return;
+    _refreshScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _refreshScheduled = false;
+      _needsRefresh = false;
+      await Future.wait([_loadTodayStats(), _loadLearnStatus()]);
+    });
   }
 
   // ------------------------------------------------------------
