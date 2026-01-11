@@ -167,7 +167,7 @@ class _PinyinIntroScreenState extends State<PinyinIntroScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Pinyin',
+            '汉语拼音 / Hanyu Pinyin',
             style: TextStyle(
               fontSize: 26,
               fontWeight: FontWeight.bold,

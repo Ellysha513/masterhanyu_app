@@ -5,6 +5,7 @@ import 'package:confetti/confetti.dart';
 import '../models/lesson.dart';
 import '../widgets/lesson_card.dart';
 import 'pinyin_menu_screen.dart';
+import 'greetings_menu_screen.dart';
 
 class LearnScreen extends StatefulWidget {
   const LearnScreen({super.key});
@@ -15,6 +16,7 @@ class LearnScreen extends StatefulWidget {
 
 class _LearnScreenState extends State<LearnScreen> {
   double pinyinProgress = 0.0;
+  double greetingsProgress = 0.0;
 
   @override
   void initState() {
@@ -32,6 +34,12 @@ class _LearnScreenState extends State<LearnScreen> {
     final quiz = prefs.getDouble('introduction_quiz_progress_$userId') ?? 0.0;
 
     final total = (intro + syllables + tones + quiz).clamp(0.0, 1.0);
+
+    // Greetings topic progress (basic + learn + quiz) each contributes 1/3
+    final basicG = prefs.getDouble('basic_greetings_progress_$userId') ?? 0.0;
+    final learnG = prefs.getDouble('learn_greetings_progress_$userId') ?? 0.0;
+    final quizG = prefs.getDouble('greetings_quiz_progress_$userId') ?? 0.0;
+    final greetingsTotal = ((basicG + learnG + quizG) / 3).clamp(0.0, 1.0);
 
     // Check if lesson was just completed (progress reached 100%)
     // Guard: only increment and show dialog once (tracked in SharedPreferences)
@@ -58,6 +66,7 @@ class _LearnScreenState extends State<LearnScreen> {
     setState(() {
       // Each sub-lesson contributes 25%; intro + syllables + tones + intro_quiz = 100%
       pinyinProgress = total;
+      greetingsProgress = greetingsTotal;
     });
   }
 
@@ -86,16 +95,16 @@ class _LearnScreenState extends State<LearnScreen> {
       id: 'greetings',
       title: 'Greetings',
       description: 'Learn basic Chinese greetings for daily conversations',
-      progress: 0.0,
+      progress: greetingsProgress,
       imageAsset: 'assets/image/greetings.png',
     ),
-    Lesson(
-      id: 'name',
-      title: 'Introduce Yourself',
-      description: 'Learn how to introduce yourself in Chinese',
-      progress: 0.0,
-      imageAsset: 'assets/image/name.png',
-    ),
+    // Lesson(
+    //   id: 'name',
+    //   title: 'Introduce Yourself',
+    //   description: 'Learn how to introduce yourself in Chinese',
+    //   progress: 0.0,
+    //   imageAsset: 'assets/image/name.png',
+    // ),
   ];
 
   @override
@@ -124,13 +133,34 @@ class _LearnScreenState extends State<LearnScreen> {
                           ),
                         );
                         _loadProgress(); // 🔁 refresh after return
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Lesson coming soon 👀'),
+                        return;
+                      }
+
+                      if (lesson.id == 'greetings') {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const GreetingsMenuScreen(),
                           ),
                         );
+                        _loadProgress();
+                        return;
                       }
+
+                      // if (lesson.id == 'name') {
+                      //    await Navigator.push(
+                      //      context,
+                      //      MaterialPageRoute(
+                      //        builder: (_) => const NameMenuScreen(),
+                      //      ),
+                      //    );
+                      //    _loadProgress();
+                      //    return;
+                      // }
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Lesson coming soon 👀')),
+                      );
                     },
                   );
                 },

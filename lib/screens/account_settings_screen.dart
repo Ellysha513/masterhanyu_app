@@ -38,6 +38,10 @@ class AccountSettingsScreen extends StatelessWidget {
         'pinyin_intro_progress_$userId',
         'tones_quiz_progress_$userId',
         'introduction_quiz_progress_$userId',
+        // Greetings topic keys
+        'basic_greetings_progress_$userId',
+        'learn_greetings_progress_$userId',
+        'greetings_quiz_progress_$userId',
         'last_active_date_$userId',
         // Badge tracking keys
         'lessons_completed_$userId',

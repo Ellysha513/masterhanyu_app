@@ -83,7 +83,22 @@ flutter:
     - assets/image/lvl2_time.png
     - assets/image/lvl1_quiz.png
     - assets/image/lvl2_quiz.png
-
+    - assets/image/bú_kèqi.png
+    - assets/image/duìbuqǐ.png
+    - assets/image/hǎojiǔ_bújiàn.png
+    - assets/image/méi_guānxi.png
+    - assets/image/nǐhǎo.png
+    - assets/image/nǐhǎo_ma.png
+    - assets/image/wǎn_ān.png
+    - assets/image/zàijiàn.png
+    - assets/image/wǎnshang_hǎo.png
+    - assets/image/wǒ_hěn_hǎo.png
+    - assets/image/wǒ_jiào.png
+    - assets/image/wǒ_shì.png
+    - assets/image/wǔ_ān.png
+    - assets/image/xièxie.png
+    - assets/image/zàijiàn.png
+    - assets/image/zǎo_ān.png
 
 
   # audio syllable #
@@ -223,7 +238,24 @@ flutter:
     - assets/audio/intro_quiz/4th_què.mp3
     - assets/audio/intro_quiz/4th_ruì.mp3
     - assets/audio/intro_quiz/4th_zuì.mp3
-    
+
+    # audio greetings #
+    - assets/audio/greetings/nǐhǎo.mp3
+    - assets/audio/greetings/nǐhǎo_ma.mp3
+    - assets/audio/greetings/wǒ_shì.mp3
+    - assets/audio/greetings/wǒ_jiào.mp3
+    - assets/audio/greetings/wǒ_hěn_hǎo.mp3
+    - assets/audio/greetings/zǎo_ān.mp3
+    - assets/audio/greetings/wǔ_ān.mp3
+    - assets/audio/greetings/wǎn_ān.mp3
+    - assets/audio/greetings/xièxie.mp3
+    - assets/audio/greetings/bú_kèqi.mp3
+    - assets/audio/greetings/duìbuqǐ.mp3
+    - assets/audio/greetings/hǎojiǔ_bújiàn.mp3
+    - assets/audio/greetings/méi_guānxi.mp3
+    - assets/audio/greetings/zàijiàn.mp3
+    - assets/audio/greetings/wǎnshang_hǎo.mp3
+
   # audio #
     - assets/audio/finish.mp3
     - assets/audio/correct.mp3
